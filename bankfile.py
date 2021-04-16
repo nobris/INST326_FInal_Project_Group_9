@@ -34,7 +34,30 @@ class Bookkeeper():
         Args: 
             mint (str): 
         """
+    def spending_category_frequency(mint): # Tyler
+        """ This method creates a frequency table to display the frequency/count of each
+        spending category throughout the user's transaction history
         
+        Args: 
+            mint (df): the dataframe from which the category frequency table will 
+            built off of
+            
+        Returns:
+            category_frequency_table(df): dataframe that displays frequency/count of each
+            spending category 
+        """
+    def mint_plot(mint): # Tyler
+        """Creates a bar plot using MatLab that displays total spending in each 
+        month to show spending over time
+        
+        Args: 
+            mint(df): dataframe from which the plot will be created from, will use
+            Date and Amount to create plot
+            
+        Returns:
+            month_plot((unsure what datatype this would be)): bar plot that displays
+            total spending in each month
+        """ 
         
 def parse_args(arglist): # Group
     """ This function will parse command-line arguments.
