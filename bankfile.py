@@ -76,18 +76,6 @@ class Bookkeeper():
         spending category throughout the user's transaction history
         
         Args: 
-            mint(df): the dataframe from which the category frequency table will 
-            built off of
-            
-        Returns:
-            category_frequency_table(df): dataframe that displays frequency/count of each
-            spending category 
-        """
-    def spending_category_frequency(mint): # Tyler
-        """ This method creates a frequency table to display the frequency/count of each
-        spending category throughout the user's transaction history
-        
-        Args: 
             mint (df): the dataframe from which the category frequency table will 
             built off of
             
