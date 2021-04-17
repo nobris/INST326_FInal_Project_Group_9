@@ -94,7 +94,28 @@ class Bookkeeper():
         Returns:
             month_plot((unsure what datatype this would be)): bar plot that displays
             total spending in each month
-        """ 
+        """
+    def top_categories(mint): # Tristan
+        """Returns the top 5 categories the user spends their money on.
+        
+        Args:
+            mint(df): the dataframe of mint transactions which will calculate
+            based on values within.
+            
+        Returns:
+            list: A list of the top 5 categories the user spends their money on
+            from most amount of money spent to least amount spent.
+        """
+    def price_range(mint): # Tristan
+        """Shows a list of transaction based on a price range.
+        
+        Args: the dataframe of mint transactions which will calculate
+        based on values within.
+
+        Returns:
+            A new dataframe sorted by date based on the price range the
+            user input.
+        """
         
 def parse_args(arglist): # Group
     """ This function will parse command-line arguments.
