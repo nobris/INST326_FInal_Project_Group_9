@@ -40,7 +40,7 @@ class Bookkeeper():
             mint (df): dataframe of the user's financial transactions
         """
     
-    def suspicious_charges(mint, start_date=None, end_date=None, account = None): # Walesia
+    def suspicous_charges(mint, start_date=None, end_date=None, account = None): # Walesia
         """ This method identifies suspicious transactions by calculating inner 
             and outer outlier fences of charges using the interquartile range.
             
@@ -52,9 +52,6 @@ class Bookkeeper():
         
         Args: 
             mint (df): user transaction dataframe
-            start_date(str or None): earliest date of interest
-            end_date(str or None): latest date of interest
-            account(str or None): account name of interest
             
         Returns:
             suspicous_charges (df): Series consisting of the suspicious charges, 
@@ -66,8 +63,6 @@ class Bookkeeper():
             
         Args: 
             mint (df): user transaction df
-            start_date(str or None): earliest date of interest
-            end_date(str or None): latest date of interest
         
         Returns: 
             financial_advice (str): general advice statements about user spending. 
@@ -81,7 +76,7 @@ class Bookkeeper():
         """
     def spending_category_frequency(mint): # Tyler
         """ This method creates a frequency table to display the frequency/count of each
-        spending category throughout the user's entire transaction history
+        spending category throughout the user's transaction history
         
         Args: 
             mint (df): the dataframe from which the category frequency table will 
@@ -93,7 +88,7 @@ class Bookkeeper():
         """
     def mint_plot(mint): # Tyler
         """Creates a bar plot using MatLab that displays total spending in each 
-        month to show spending over time.
+        month to show spending over time
         
         Args: 
             mint(df): dataframe from which the plot will be created from, will use
@@ -103,34 +98,50 @@ class Bookkeeper():
             month_plot((unsure what datatype this would be)): bar plot that displays
             total spending in each month
         """
-    def top_categories(mint, start_date=None, end_date=None): # Tristan
-        """Returns the top 5 categories the user spends their money on along with 
-        how much money they spent for a specified date range.
+    def top_categories(mint): # Tristan
+        """Returns the top 5 categories the user spends their money on.
         
         Args:
             mint(df): the dataframe of mint transactions which will calculate
             based on values within.
-            start_date(str or None) - optional: earliest date of interest
-            end_date(str or None) - optional: latest date of interest
-                        
+            
         Returns:
-            top_categories(list): A list of the top 5 categories the user spends their money on
+            list: A list of the top 5 categories the user spends their money on
             from most amount of money spent to least amount spent.
         """
-    def price_range(mint, pricemin=None, pricemax=None): # Tristan
-        """Shows a list of transactions based on a price range.
+    def price_range(mint): # Tristan
+        """Shows a list of transaction based on a price range.
         
-        Args:
-            mint (df): the dataframe of mint transactions which will calculate
-            based on values within.
-            pricemin (float) - optional: minimum price of interest
-            pricemax (float) - optional: maximum price of interest
+        Args: the dataframe of mint transactions which will calculate
+        based on values within.
 
         Returns:
             A new dataframe sorted by date based on the price range the
             user input.
         """
-        
+  def spendings_category(mint, category): # Sophia
+       """This method returns the amount spent for a specific category
+      
+       Args:
+           mint(df): user transaction dataframe
+           category(str): the specific category that is calculated from
+      
+       Returns:
+           amount(float): the calculated amount spent
+       """
+   def top_subcategory(mint, category, amount = 5): # Sophia
+       """Finds top transaction type within a specific category
+      
+       Args:
+           mint(df): user transaction dataframe
+           category(str): the category that gets used
+           amount(int): optional parameter that limits the amount returned
+      
+       Returns:
+           top_transactions(dict): dictionary where key is transaction type and
+           value is amount spent limited to the amount       
+       """
+       
 def parse_args(arglist): # Group
     """ This function will parse command-line arguments.
     
@@ -139,20 +150,14 @@ def parse_args(arglist): # Group
     
     Also allow optional arguments for filtering: *Subject to change
     
-        - startdate (str or None): the earliest date to include in the methods; 
+        - startdate: the earliest date to include in the methods; 
         If omitted, date will start as far back as possible.
           
-        - enddate (str or None): the latest date to include in the methods;
+        - enddate: the latest date to include in the methods;
         If omitted, the end date will end as recent as possible.
             
-        - account (str): (discover, choice checking, investor checking, online savings, etc.)
+        - account: (discover, choice checking, investor checking, online savings, etc.)
         If omitted, defaults to include all accounts.
-        
-        - pricemin (float): price floor 
-        If omitted, defaults to lowest price available. 
-        
-        - pricemax (float): price ceiling 
-        If omitted, defaults to max price available.
                 
     Args:
         arglist (list of str): arguments from the command line.
@@ -172,6 +177,5 @@ if __name__ == "__main__":
         file has been written for them, and say something about what that file contains.
     """
     args = parse_args(sys.argv[1:])
-    ### To be populated at office hours group meeting 4/23
     
     
