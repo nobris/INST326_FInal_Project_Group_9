@@ -10,7 +10,7 @@ Print financial summary to txt file.
 import pandas as pd
 import csv
 import matplotlib
-import calendar # if we want to convert month numbers in the .csv file 
+import calendar # if we want to convert month numbers in the .csv file to their name
 
 class Bookkeeper(): 
     """ This class reads the Mint transactions.csv file for use in following 
@@ -122,7 +122,8 @@ def parse_args(arglist): # Group
         namespace: the parsed arguments, as a namespace.
     """
     parser = ArgumentParser()
-    parser.add_argument() ### To be populated at office hours group meeting 4/23/2021 16:00 EST with Professor Bills.
+    parser.add_argument() 
+    ### To be populated at office hours group meeting 4/23/2021 @ 16:00 EST with Professor Bills.
     return parser.parse_args(arglist)
 
 if __name__ == "__main__":
