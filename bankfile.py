@@ -150,14 +150,17 @@ def parse_args(arglist): # Group
     
     Also allow optional arguments for filtering: *Subject to change
     
-        - startdate: the earliest date to include in the methods; 
+        - startdate (str or None): the earliest date to include in the methods; 
         If omitted, date will start as far back as possible.
           
-        - enddate: the latest date to include in the methods;
+        - enddate (str or None): the latest date to include in the methods;
         If omitted, the end date will end as recent as possible.
             
-        - account: (discover, choice checking, investor checking, online savings, etc.)
+        - account (str or None): (discover, choice checking, investor checking, online savings, etc.)
         If omitted, defaults to include all accounts.
+        
+        - category (str or None): (resturants, credit card payment, pharmacy, gym, grocery, etc.)
+        If omitted, defaults to include all available categories 
                 
     Args:
         arglist (list of str): arguments from the command line.
