@@ -10,51 +10,92 @@ Print financial summary to txt file.
 import pandas as pd
 import csv
 import matplotlib
+import calendar # if we want to convert month numbers in the .csv file 
 
 class Bookkeeper(): 
     """ This class reads the Mint transactions.csv file for use in following 
     modules/functions.
     
-    Attributes: 
-        ****(methods go here)***
-        transactions (str): path to file containing user's financial details.
+        It includes the following methods:
         suspicous_charges(): method flags suspicous charges
+        financial_advice(): method compares debt to income to offer financial advice
+        spending_category_frequency(): displays frequency/count of spending by category
+        mint_plot(): displays plot of spending each month over time.
+    
+    Attributes:  
+        transactions (file): path to file containing user's financial details.
     """
-    def __init__(self, mint): 
+    def __init__(self, transactions): 
         """ Opens the user's financial transaction file, creates and builds a dataframe from it. 
         
         Args: 
-            mint (file): The dataframe is made up of of the following columns: 
+            transactions (file): The dataframe is made up of of the following columns: 
                 date, description, original description, amount, transaction type, 
                 category, account name, labels (if any), and notes (if any).
+                
+        Returns:
+            mint (df): dataframe of the user's financial transactions
         """
     
     def suspicous_charges(mint): # Walesia
         """ This method identifies suspicious transactions by calculating inner 
             and outer outlier fences of charges using the interquartile range.
-            For the user specified date range, debit charges falling outside of
-            this range  of the outer fences will be flagged as a suspicous 
-            transaction and returned to the user.
+            
+            First, this method filters the df for transactions within the
+            user specified date range. Next, calculate outlier fences. Any
+            debit charges falling outside of the range of the outer fences
+            will be flagged as a susipicious transaction, filtered in a new
+            series and returned to the user.
         
         Args: 
-            mint (file): user transaction dataframe
+            mint (df): user transaction dataframe
+            
+        Returns:
+            suspicous_charges (df): Series consisting of the suspicious charges, 
+                sorted by date and then amount.
         """
     def financial_advice(mint): # Walesia
-        """ For the user specified date range (if applied) this method will calculate 
-            income vs spending and offer financial advice to the user.
+        """ For the user specified date range (if applied) this method will 
+            calculate income vs spending and offer financial advice.
             
         Args: 
-            mint (file): user transaction df
-            debts ()
-            date_range (optional)
+            mint (df): user transaction df
         
-        Side effects: 
-            Prints statements about user spending. 
-            If credit card debt/expenses > income, function prints telling the 
-            user they need to save.
-            If debt/expenses < income, function prints congratultaing the user, 
-            letting them know they might want to start investing the excess.
+        Returns: 
+            financial_advice (str): general advice statements about user spending. 
+            
+                If expenses > income, function provides
+                some strategies to help save more money.
+                
+                If expenses < income, and difference is < $300,
+                function congratulates the user, letting them 
+                know what they could do with the extra money.
         """
+    def spending_category_frequency(mint): # Tyler
+        """ This method creates a frequency table to display the frequency/count of each
+        spending category throughout the user's transaction history
+        
+        Args: 
+            mint(df): the dataframe from which the category frequency table will 
+            built off of
+            
+        Returns:
+            category_frequency_table(df): dataframe that displays frequency/count of each
+            spending category 
+        """
+        
+    def mint_plot(mint): # Tyler
+        """Creates a bar plot using MatLab that displays total spending in each 
+        month to show spending over time
+        
+        Args: 
+            mint(df): dataframe from which the plot will be created from, will use
+            Date and Amount to create plot
+            
+        Returns:
+            month_plot((unsure what datatype this would be)): bar plot that displays
+            total spending in each month
+        """ 
         
 def parse_args(arglist): # Group
     """ This function will parse command-line arguments.
