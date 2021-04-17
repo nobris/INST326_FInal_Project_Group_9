@@ -2,7 +2,7 @@
 
 Read transactions, summarize spending over time, plot spending over time, 
 identify suspicious transactions, offer financial advice based on spending,
-optionally filter by date range, amount, or category.
+optionally filter by date range.
 
 Print financial summary to txt file.
 """
@@ -11,6 +11,9 @@ import pandas as pd
 import csv
 import matplotlib
 import calendar # if we want to convert month numbers in the .csv file to their name
+
+# We are not sure what the format will be for adding filters to our methods yet, we are expecting to
+# get more clarify
 
 class Bookkeeper(): 
     """ This class reads the Mint transactions.csv file for use in following 
@@ -37,11 +40,11 @@ class Bookkeeper():
             mint (df): dataframe of the user's financial transactions
         """
     
-    def suspicous_charges(mint): # Walesia
+    def suspicous_charges(mint, start_date=None, end_date=None, account = None): # Walesia
         """ This method identifies suspicious transactions by calculating inner 
             and outer outlier fences of charges using the interquartile range.
             
-            First, this method filters the df for transactions within the
+            First, this method filters the df for transactions within the opt.
             user specified date range. Next, calculate outlier fences. Any
             debit charges falling outside of the range of the outer fences
             will be flagged as a susipicious transaction, filtered in a new
@@ -54,7 +57,7 @@ class Bookkeeper():
             suspicous_charges (df): Series consisting of the suspicious charges, 
                 sorted by date and then amount.
         """
-    def financial_advice(mint): # Walesia
+    def financial_advice(mint, start_date = None, end_date = None): # Walesia
         """ For the user specified date range (if applied) this method will 
             calculate income vs spending and offer financial advice.
             
@@ -99,22 +102,20 @@ class Bookkeeper():
 def parse_args(arglist): # Group
     """ This function will parse command-line arguments.
     
-    Expect one mandatory argument (a mint file of the user's transactions).
+    Expect one mandatory argument (a path to a .csv file from Mint
+    of the user's transactions).
     
     Also allow optional arguments for filtering: *Subject to change
-        - date_range: date range for filtering
-            (defaults to entire historical date range)
-            
-        - category: (gym, food & dining, transfer, groceries, interest income, 
-            gas & fuel, alcohol & bars, veterinary, restaurants, kids activities, 
-            clothing, income, federal fax, shopping, doctor, fast food, personal care, 
-            vacation, pharmacy, etc.)
-            
-        - account name: (discover, choice checking, investor checking, online savings, etc.)
-            (defaults to include all categories)
-            
-        - amount: transactions either above/below threshold or within a certain range. 
     
+        - startdate: the earliest date to include in the methods; 
+        If omitted, date will start as far back as possible.
+          
+        - enddate: the latest date to include in the methods;
+        If omitted, the end date will end as recent as possible.
+            
+        - account: (discover, choice checking, investor checking, online savings, etc.)
+        If omitted, defaults to include all accounts.
+                
     Args:
         arglist (list of str): arguments from the command line.
     
@@ -129,8 +130,8 @@ def parse_args(arglist): # Group
 if __name__ == "__main__":
     """ Statement executes code when file is run from cmd line. 
     
-        TBD, but thinking we might want to print some statement telling the user a separate file has been written for them,
-        and detail what that file will contain.
+        Output TBD; thinking we might want to print some statement telling the user a separate 
+        file has been written for them, and say something about what that file contains.
     """
     args = parse_args(sys.argv[1:])
     
