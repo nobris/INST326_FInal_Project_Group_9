@@ -12,9 +12,6 @@ import csv
 import matplotlib
 import calendar # if we want to convert month numbers in the .csv file to their name
 
-# We are not sure what the format will be for adding filters to our methods yet, we are expecting to
-# get more clarify
-
 class Bookkeeper(): 
     """ This class reads the Mint transactions.csv file for use in following 
     modules/functions.
@@ -24,6 +21,9 @@ class Bookkeeper():
         financial_advice(): method compares debt to income to offer financial advice
         spending_category_frequency(): displays frequency/count of spending by category
         mint_plot(): displays plot of spending each month over time.
+        
+        4/16/21: Not yet sure what the exact format will be for adding filters 
+        to our methods,expecting to get more clarity next week.
     
     Attributes:  
         transactions (file): path to file containing user's financial details.
