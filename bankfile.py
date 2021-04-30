@@ -4,7 +4,6 @@ Read transactions, summarize spending over time, plot spending over time,
 identify suspicious transactions, offer financial advice based on spending,
 optionally filter by date range.
 
-Print financial summary to txt file.
 """
 
 import pandas as pd
