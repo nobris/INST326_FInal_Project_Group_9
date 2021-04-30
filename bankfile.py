@@ -1,9 +1,7 @@
 """Create financial summary information from transaction data in a file.
-
 Read transactions, summarize spending over time, plot spending over time, 
 identify suspicious transactions, offer financial advice based on spending,
 optionally filter by date range.
-
 """
 from argparse import ArgumentParser
 import sys
@@ -158,18 +156,22 @@ class Bookkeeper:
                 function congratulates the user, letting them 
                 know what they could do with the extra money.
         """
-    def spending_category_frequency(mint): # Tyler
+    def spending_category_frequency(self): # Tyler
         """ This method creates a frequency table to display the frequency/count of each
         spending category throughout the user's transaction history
         
         Args: 
-            mint (df): the dataframe from which the category frequency table will 
+            transactions(df): the dataframe from which the category frequency table will 
             built off of
             
         Returns:
             category_frequency_table(df): dataframe that displays frequency/count of each
             spending category 
         """
+        print("\n Now, we will provide a frequency table of spending categories you use the most.")
+        df = self.transactions 
+        category_frequency = pd.crosstab(index = df['Category'], columns = 'count').sort_values(['count'], ascending = False)
+        print(category_frequency)
     def mint_plot(mint): # Tyler
         """Creates a bar plot using MatLab that displays total spending in each 
         month to show spending over time
@@ -201,7 +203,6 @@ class Bookkeeper:
             based on values within.
             l_price (float): the lowest price included in the range.
             h_price (float): the highest price included in the range.
-
         Returns:
             A new dataframe sorted by date based on the price range the
             user input.
@@ -274,7 +275,6 @@ if __name__ == "__main__":
     print("\n **Thank you for using Team 9's 'Smart Money' Analyzer for your Mint data!**")
     # Instantiate the class
     print(Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account))
-    
-    
-    
+    print("\n")
+    print(Bookkeeper(args.mint_csv).spending_category_frequency())
     
