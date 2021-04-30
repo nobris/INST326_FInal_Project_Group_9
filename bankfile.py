@@ -193,7 +193,7 @@ class Bookkeeper():
             A new dataframe sorted by date based on the price range the
             user input.
         """
-  def spendings_category(self, category): # Sophia
+    def spendings_category(self, category): # Sophia
        """This method returns the total amount spent for a specific category
       
        Args:
@@ -206,7 +206,7 @@ class Bookkeeper():
        total = category_filter["Amount"].sum()
        return(total)
    
-   def top_subcategory(self, category, amount = 5): # Sophia
+    def top_subcategory(self, category, amount = 5): # Sophia
        """Finds top transaction type within a specific category
       
        Args:
