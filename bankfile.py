@@ -92,35 +92,42 @@ class Bookkeeper():
         # if user does not specify an Account Name, choose one randomly from the file
         if account is None:
             account = random.choice(list(transactions["Account Name"].unique()))
-            
+        
+        # create date and account type filters
         account_filter = mint["Account Name"] == account
         date_filter = (mint["Date"] <= end_date) & (mint["Date"] >= start_date)
 
+        # apply filters, assign to new dataframe variable
         ad_filter = mint[account_filter & date_filter]
-
+        
+        # define quartiles based on account charges
         q1 = ad_filter.quantile(q=0.25, axis=0, numeric_only=True, interpolation='linear')
         q3 = ad_filter.quantile(q=0.75, axis=0, numeric_only=True, interpolation='linear')
+        # inner quartile range
         iqr = q3-q1
 
         # outlier formula for suspicious charges
         lower = (q1 - (3*iqr))
         upper = (q3 + (3*iqr))
 
-        # filter for debit charges falling outside of fences.
+        # filter for debit charges falling outside of outlier fences.
         suspicious_charges = ad_filter[(ad_filter["Amount"] < float(lower)) |
                                     (ad_filter["Amount"] > float(upper)) &
                                     (ad_filter["Transaction Type"] == "debit")]
-
+    
+        # no suspicious charges found
         if suspicious_charges.empty:
             print("Guess what? Great news! Our scan did not find any potentially unusual charges")
             print(f"for your {account} account between {start_date} and {end_date}.")
-
+        
+        # what to do if charges were found
         else:
             print(f"Uh oh! Our scan found these potentially suspicious charges for your {account}")
             print(f"account between {start_date} and {end_date}. Check them out: ")
             
-            # Drop duplicate charges, since frequency would indicate user was likely aware 
-            # and authorized these purchases.
+            # Return list of suspicous charges, dropping duplicate charges, 
+            # since frequency would indicate user was likely aware and
+            # authorized these purchases.
             return suspicious_charges.drop_duplicates(subset="Description", keep=False, inplace=False)
             
         
