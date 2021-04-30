@@ -120,7 +120,7 @@ class Bookkeeper:
                                     (ad_filter["Transaction Type"] == "debit")]
         
         # Message to user that this method is running
-        print("\n Running a scan to identify suspicious charges... just a moment \n")
+        print("\n First, let's run a scan to identify suspicious charges... just a moment...\n")
         
         # Wait 5 seconds before next code block
         time.sleep(3)
@@ -271,6 +271,7 @@ if __name__ == "__main__":
     """
     args = parse_args(sys.argv[1:])
     
+    print("\n **Thank you for using Team 9's 'Smart Money' Analyzer for your Mint data!**")
     # Instantiate the class
     print(Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account))
     
