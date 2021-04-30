@@ -11,6 +11,7 @@ import csv
 import matplotlib
 import calendar
 import datetime
+import random
 
 class Bookkeeper(): 
     """ This class reads the Mint transactions.csv file for use in following 
@@ -46,7 +47,10 @@ class Bookkeeper():
         transactions = self.transactions
         
         transactions = pd.read_csv(transactions)
+        # drop empty columns from dataframe
         transactions = transactions.drop(["Labels", "Notes"], axis = 1)
+        
+        # change Date column to datetime format
         transactions["Date"] = pd.to_datetime(transactions["Date"])
         
         # earliest and most recent dates from the user's financial transactions
@@ -67,7 +71,7 @@ class Bookkeeper():
             upper outer fence: Q3 + 3*IQ
             
             Unique debit charges falling outside of the range of either fence
-            will be flagged as a susipicious transaction and returned to the user.
+            will be flagged as a suspicious transaction and returned to the user.
         
         Args: 
             mint (df): dataframe of the user's financial transactions
@@ -85,6 +89,10 @@ class Bookkeeper():
                 sorted by date and then amount.
         """
         
+        # if user does not specify an Account Name, choose one randomly from the file
+        if account is None:
+            account = random.choice(list(transactions["Account Name"].unique()))
+            
         account_filter = mint["Account Name"] == account
         date_filter = (mint["Date"] <= end_date) & (mint["Date"] >= start_date)
 
@@ -104,10 +112,12 @@ class Bookkeeper():
                                     (ad_filter["Transaction Type"] == "debit")]
 
         if suspicious_charges.empty:
-            print("""Congratulations! Our scan did not find any potentially unusual 
-                  charges for your specified dates.""")
+            print("Guess what? Great news! Our scan did not find any potentially unusual charges")
+            print(f"for your {account} account between {start_date} and {end_date}.")
+
         else:
-            print(f"The scan found some suspicious charges between {start_date} and {end_date}")
+            print(f"Uh oh! Our scan found these potentially suspicious charges for your {account}")
+            print(f"account between {start_date} and {end_date}. Check them out: ")
             
             # Drop duplicate charges, since frequency would indicate user was likely aware 
             # and authorized these purchases.
