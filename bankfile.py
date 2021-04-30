@@ -10,11 +10,12 @@ Print financial summary to txt file.
 import pandas as pd
 import csv
 import matplotlib
-import calendar # if we want to convert month numbers in the .csv file to their name
+import calendar
+import datetime
 
 class Bookkeeper(): 
     """ This class reads the Mint transactions.csv file for use in following 
-    modules/functions.
+        methods/functions.
     
         It includes the following methods:
         suspicous_charges(): method flags suspicous charges
@@ -31,6 +32,8 @@ class Bookkeeper():
     def __init__(self, transactions): 
         """ Opens the user's financial transaction file, creates and builds a dataframe from it. 
         
+            It also converts the Date column in the transaction file into datetime format
+        
         Args: 
             transactions (file): The dataframe is made up of of the following columns: 
                 date, description, original description, amount, transaction type, 
@@ -38,25 +41,80 @@ class Bookkeeper():
                 
         Returns:
             mint (df): dataframe of the user's financial transactions
+            earliest (str): earliest available date from the file
+            latest (str): latest available date from the file
         """
-    
-    def suspicous_charges(mint, start_date=None, end_date=None, account = None): # Walesia
-        """ This method identifies suspicious transactions by calculating inner 
-            and outer outlier fences of charges using the interquartile range.
+        transactions = self.transactions
+        
+        transactions = pd.read_csv(transactions)
+        transactions = transactions.drop(["Labels", "Notes"], axis = 1)
+        transactions["Date"] = pd.to_datetime(transactions["Date"])
+        
+        # earliest and most recent dates from the user's financial transactions
+        earliest = str(min(transactions["Date"].dt.date))
+        latest = str(max(transactions["Date"].dt.date))
+        
+        return transactions, earliest, latest
+
+    def suspicious_charges(mint, start_date=earliest, end_date=latest, account = None): # Walesia
+        """ This method identifies unusual and potentially suspicious transactions.
             
-            First, this method filters the df for transactions within the opt.
-            user specified date range. Next, calculate outlier fences. Any
-            debit charges falling outside of the range of the outer fences
-            will be flagged as a susipicious transaction, filtered in a new
-            series and returned to the user.
+            First, this method filters the df for transactions by the optional
+            user specified date range and account name. After calculating the 
+            25th and 75th percentiles, it then computes the upper and lower outer
+            fences of charges using these formulas: 
+            
+            lower outer fence: Q1 - 3*IQ
+            upper outer fence: Q3 + 3*IQ
+            
+            Unique debit charges falling outside of the range of either fence
+            will be flagged as a susipicious transaction and returned to the user.
         
         Args: 
-            mint (df): user transaction dataframe
+            mint (df): dataframe of the user's financial transactions
+            start_date (str): optional start date in MM-DD-YYYY. Defaults to None.
+            end_date (str): optional end date in MM-DD-YYYY. Defaults to None.
+            account (str): user 'Account Name' to search. Defaults to None.
+            
+        Side Effects: 
+            Prints a congratulatory message if the scan did not find any potentially 
+            suspicious charges. If suspicious charges were found, prints a message
+            indicating so.
             
         Returns:
-            suspicous_charges (df): Series consisting of the suspicious charges, 
+            suspicious_charges (df): Series consisting of the suspicious charges, 
                 sorted by date and then amount.
         """
+        
+        account_filter = mint["Account Name"] == account
+        date_filter = (mint["Date"] <= end_date) & (mint["Date"] >= start_date)
+
+        ad_filter = mint[account_filter & date_filter]
+
+        q1 = ad_filter.quantile(q=0.25, axis=0, numeric_only=True, interpolation='linear')
+        q3 = ad_filter.quantile(q=0.75, axis=0, numeric_only=True, interpolation='linear')
+        iqr = q3-q1
+
+        # outlier formula for suspicious charges
+        lower = (q1 - (3*iqr))
+        upper = (q3 + (3*iqr))
+
+        # filter for debit charges falling outside of fences.
+        suspicious_charges = ad_filter[(ad_filter["Amount"] < float(lower)) |
+                                    (ad_filter["Amount"] > float(upper)) &
+                                    (ad_filter["Transaction Type"] == "debit")]
+
+        if suspicious_charges.empty:
+            print("""Congratulations! Our scan did not find any potentially unusual 
+                  charges for your specified dates.""")
+        else:
+            print(f"The scan found some suspicious charges between {start_date} and {end_date}")
+            
+            # Drop duplicate charges, since frequency would indicate user was likely aware 
+            # and authorized these purchases.
+            return suspicious_charges.drop_duplicates(subset="Description", keep=False, inplace=False)
+            
+        
     def financial_advice(mint, start_date = None, end_date = None): # Walesia
         """ For the user specified date range (if applied) this method will 
             calculate income vs spending and offer financial advice.
@@ -131,6 +189,7 @@ class Bookkeeper():
        category_filter = df[df["Category"] == category]
        total = category_filter["Amount"].sum()
        return(total)
+   
    def top_subcategory(self, category, amount = 5): # Sophia
        """Finds top transaction type within a specific category
       
