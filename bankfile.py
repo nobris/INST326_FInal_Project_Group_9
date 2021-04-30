@@ -192,9 +192,9 @@ class Bookkeeper:
             from most amount of money spent to least amount spent.
         """
         df = self.transactions
-        df_cat = df[['Category', 'Amount']].groupby('Category').sum()\
-            .sort_values('Amount', ascending=False).head(5)
-        return df_cat
+        df_cat = df[['Category', 'Amount']].groupby('Category').sum().sort_values('Amount', ascending=False).head(5)
+        print("\nHere are your top 5 spending categories and the amounts you spend for each of them:\n")
+        print(df_cat)
     def price_range(mint): # Tristan
         """Shows a list of transaction based on a price range.
         
@@ -277,4 +277,4 @@ if __name__ == "__main__":
     print(Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account))
     print("\n")
     print(Bookkeeper(args.mint_csv).spending_category_frequency())
-    
+    print(Bookkeeper(args.mint_csv).top_categories())
