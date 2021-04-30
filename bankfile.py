@@ -182,22 +182,25 @@ class Bookkeeper:
             month_plot((unsure what datatype this would be)): bar plot that displays
             total spending in each month
         """
-    def top_categories(mint): # Tristan
+    def top_categories(): # Tristan
         """Returns the top 5 categories the user spends their money on.
-        
-        Args:
-            mint(df): the dataframe of mint transactions which will calculate
-            based on values within.
             
         Returns:
             list: A list of the top 5 categories the user spends their money on
             from most amount of money spent to least amount spent.
         """
+        df = self.transactions
+        df_cat = df[['Category', 'Amount']].groupby('Category').sum()\
+            .sort_values('Amount', ascending=False).head(5)
+        return df_cat
     def price_range(mint): # Tristan
         """Shows a list of transaction based on a price range.
         
-        Args: the dataframe of mint transactions which will calculate
-        based on values within.
+        Args: 
+            mint(df): the dataframe of mint transactions which will calculate
+            based on values within.
+            l_price (float): the lowest price included in the range.
+            h_price (float): the highest price included in the range.
 
         Returns:
             A new dataframe sorted by date based on the price range the
