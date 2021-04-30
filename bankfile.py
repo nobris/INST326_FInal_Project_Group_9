@@ -5,26 +5,27 @@ identify suspicious transactions, offer financial advice based on spending,
 optionally filter by date range.
 
 """
-
+from argparse import ArgumentParser
+import sys
 import pandas as pd
 import csv
 import matplotlib
 import calendar
 import datetime
 import random
+import time
 
-class Bookkeeper(): 
+class Bookkeeper: 
     """ This class reads the Mint transactions.csv file for use in following 
         methods/functions.
     
         It includes the following methods:
-        suspicous_charges(): method flags suspicous charges
-        financial_advice(): method compares debt to income to offer financial advice
+        suspicous_charges(): flags potentially suspicious charges
+        financial_advice(): compares debt to income to offer financial advice
+        
         spending_category_frequency(): displays frequency/count of spending by category
         mint_plot(): displays plot of spending each month over time.
         
-        4/16/21: Not yet sure what the exact format will be for adding filters 
-        to our methods,expecting to get more clarity next week.
     
     Attributes:  
         transactions (file): path to file containing user's financial details.
@@ -40,26 +41,22 @@ class Bookkeeper():
                 category, account name, labels (if any), and notes (if any).
                 
         Returns:
-            mint (df): dataframe of the user's financial transactions
+            transactions (df): dataframe of the user's financial transactions
             earliest (str): earliest available date from the file
             latest (str): latest available date from the file
         """
-        transactions = self.transactions
-        
-        transactions = pd.read_csv(transactions)
+        self.transactions = pd.read_csv(transactions)
         # drop empty columns from dataframe
-        transactions = transactions.drop(["Labels", "Notes"], axis = 1)
+        self.transactions = self.transactions.drop(["Labels", "Notes"], axis = 1)
         
         # change Date column to datetime format
-        transactions["Date"] = pd.to_datetime(transactions["Date"])
+        self.transactions["Date"] = pd.to_datetime(self.transactions["Date"])
         
         # earliest and most recent dates from the user's financial transactions
-        earliest = str(min(transactions["Date"].dt.date))
-        latest = str(max(transactions["Date"].dt.date))
-        
-        return transactions, earliest, latest
+        self.earliest = str(min(self.transactions["Date"].dt.date))
+        self.latest = str(max(self.transactions["Date"].dt.date))
 
-    def suspicious_charges(mint, start_date=earliest, end_date=latest, account = None): # Walesia
+    def suspicious_charges(self, start_date=0, end_date=0, account = None): # Walesia
         """ This method identifies unusual and potentially suspicious transactions.
             
             First, this method filters the df for transactions by the optional
@@ -90,15 +87,22 @@ class Bookkeeper():
         """
         
         # if user does not specify an Account Name, choose one randomly from the file
+        
+        if start_date == 0:
+            start_date = self.earliest
+            
+        if end_date == 0:
+            end_date = self.latest
+        
         if account is None:
-            account = random.choice(list(transactions["Account Name"].unique()))
+            account = random.choice(list(self.transactions["Account Name"].unique()))
         
         # create date and account type filters
-        account_filter = mint["Account Name"] == account
-        date_filter = (mint["Date"] <= end_date) & (mint["Date"] >= start_date)
+        account_filter = self.transactions["Account Name"] == account
+        date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
 
         # apply filters, assign to new dataframe variable
-        ad_filter = mint[account_filter & date_filter]
+        ad_filter = self.transactions[account_filter & date_filter]
         
         # define quartiles based on account charges
         q1 = ad_filter.quantile(q=0.25, axis=0, numeric_only=True, interpolation='linear')
@@ -114,7 +118,13 @@ class Bookkeeper():
         suspicious_charges = ad_filter[(ad_filter["Amount"] < float(lower)) |
                                     (ad_filter["Amount"] > float(upper)) &
                                     (ad_filter["Transaction Type"] == "debit")]
-    
+        
+        # Message to user that this method is running
+        print("\n Running a scan to identify suspicious charges... just a moment \n")
+        
+        # Wait 5 seconds before next code block
+        time.sleep(3)
+        
         # no suspicious charges found
         if suspicious_charges.empty:
             print("Guess what? Great news! Our scan did not find any potentially unusual charges")
@@ -123,15 +133,15 @@ class Bookkeeper():
         # what to do if charges were found
         else:
             print(f"Uh oh! Our scan found these potentially suspicious charges for your {account}")
-            print(f"account between {start_date} and {end_date}. Check them out: ")
+            print(f"account between {start_date} and {end_date}.")
+            print("Check them out here: \n")
             
             # Return list of suspicous charges, dropping duplicate charges, 
             # since frequency would indicate user was likely aware and
             # authorized these purchases.
             return suspicious_charges.drop_duplicates(subset="Description", keep=False, inplace=False)
             
-        
-    def financial_advice(mint, start_date = None, end_date = None): # Walesia
+    def financial_advice(transactions, start_date = None, end_date = None): # Walesia
         """ For the user specified date range (if applied) this method will 
             calculate income vs spending and offer financial advice.
             
@@ -221,15 +231,12 @@ class Bookkeeper():
 def parse_args(arglist): # Group
     """ This function will parse command-line arguments.
     
-    Expect one mandatory argument (a path to a .csv file from Mint
-    of the user's transactions).
+        Optional arguments for filtering: *Subject to change
     
-    Also allow optional arguments for filtering: *Subject to change
-    
-        - startdate (str or None): the earliest date to include in the methods; 
+        - start_date (str or None): the earliest date to include in the methods; 
         If omitted, date will start as far back as possible.
           
-        - enddate (str or None): the latest date to include in the methods;
+        - end_date (str or None): the latest date to include in the methods;
         If omitted, the end date will end as recent as possible.
             
         - account (str or None): (discover, choice checking, investor checking, online savings, etc.)
@@ -245,16 +252,25 @@ def parse_args(arglist): # Group
         namespace: the parsed arguments, as a namespace.
     """
     parser = ArgumentParser()
-    parser.add_argument() 
-    ### To be populated at office hours group meeting 4/23/2021 @ 16:00 EST with Professor Bills.
+    
+    parser.add_argument("mint_csv", help ="CSV containing mint transaction data") 
+    parser.add_argument("-s", "--start_date", type = str, default = 0,
+                        help ="str specifying the start date range; MM-DD-YYYY format")
+    parser.add_argument("-e", "--end_date", type = str, default = 0,
+                        help ="str specifying the end date range; MM-DD-YYYY format")
+    parser.add_argument("-a", "--account", type = str, default = None,
+                        help ="str specifying the financial account")
+
     return parser.parse_args(arglist)
 
 if __name__ == "__main__":
     """ Statement executes code when file is run from cmd line. 
-    
-        Output TBD; thinking we might want to print some statement telling the user a separate 
-        file has been written for them, and say something about what that file contains.
     """
     args = parse_args(sys.argv[1:])
+    
+    # Instantiate the class
+    print(Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account))
+    
+    
     
     
