@@ -172,6 +172,7 @@ class Bookkeeper:
         df = self.transactions 
         category_frequency = pd.crosstab(index = df['Category'], columns = 'count').sort_values(['count'], ascending = False)
         print(category_frequency)
+        
     def mint_plot(mint): # Tyler
         """Creates a bar plot using MatLab that displays total spending in each 
         month to show spending over time
