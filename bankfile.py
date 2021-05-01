@@ -185,7 +185,7 @@ class Bookkeeper:
             month_plot((unsure what datatype this would be)): bar plot that displays
             total spending in each month
         """
-    def top_categories(): # Tristan
+    def top_categories(self): # Tristan
         """Returns the top 5 categories the user spends their money on.
             
         Returns:
@@ -193,9 +193,9 @@ class Bookkeeper:
             from most amount of money spent to least amount spent.
         """
         df = self.transactions
-        df_cat = df[['Category', 'Amount']].groupby('Category').sum()\
-            .sort_values('Amount', ascending=False).head(5)
-        return df_cat
+        df_cat = df[['Category', 'Amount']].groupby('Category').sum().sort_values('Amount', ascending=False).head(5)
+        print("\nHere are your top 5 spending categories and the amounts you spend for each of them:\n")
+        print(df_cat)
     def price_range(mint): # Tristan
         """Shows a list of transaction based on a price range.
         
@@ -208,19 +208,63 @@ class Bookkeeper:
             A new dataframe sorted by date based on the price range the
             user input.
         """
-    def spendings_category(self, category): # Sophia
-       """This method returns the total amount spent for a specific category
-      
-       Args:
-           category(str): the specific category that is calculated from
-      
+
+    def day_of_week_summary(self): # Sophia       
+        """Creates dataframe with summary values for the days of the week.
+       
        Returns:
-           total(float): the calculated amount spent
-       """
-       category_filter = df[df["Category"] == category]
-       total = category_filter["Amount"].sum()
-       return(total)
-   
+           summary_df(df): dataframe containing mean, median, minimum, maximum 
+           amount and average amount of transactions used for the days of the week.
+        """
+        # adds day of the week to data frame
+        df = self.transactions
+        s1 = df["Date"]
+        dow_list = []
+        for i in s1:
+            day_of_week = i.strftime("%A")
+            dow_list.append(day_of_week)
+        df["Day of Week"] = pd.Series(dow_list)
+        print("\nAdded the day of the week to the data frame to the correseponding date.")
+        
+        # creates summary data frame
+        avg_transactions = []
+        means = []
+        medians = []
+        mins = []
+        maxs = []
+        days_list = list(set(list(df["Day of Week"])))
+        
+        for i in days_list:
+            #calculates average number of transactions 
+            avg_transaction = df[df["Day of Week"]==i].groupby("Date")["Date"].count().mean()    
+            avg_transactions.append(avg_transaction)
+
+            #calculates mean amount spent
+            mean = df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().mean()
+            means.append(mean)
+            
+            #calculates median amount spent
+            median = df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().median()
+            medians.append(median)
+            
+            #finds minimum amount spent
+            minimum = df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().min()
+            mins.append(minimum)
+            
+            #finds maximum amount spent
+            maximum = df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().max()
+            maxs.append(maximum)
+        # creates series for each summary value
+        s2 = pd.Series(avg_transactions, index = days_list, name = "Avg Transactions")
+        s3 = pd.Series(means, index = days_list, name = "Mean")
+        s4 = pd.Series(medians, index = days_list, name = "Median")
+        s5 = pd.Series(mins, index = days_list, name = "Minimum")
+        s6 = pd.Series(maxs, index = days_list, name = "Maximum")
+        # concatenates the series
+        summary_df = pd.concat([s2,s3,s4,s5,s6], axis = 1)
+        print("\nReturns a summary data frame.")
+        return summary_df
+    
     def top_subcategory(self, category, amount = 5): # Sophia
        """Finds top transaction type within a specific category
       
@@ -278,4 +322,5 @@ if __name__ == "__main__":
     print(Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account))
     print("\n")
     print(Bookkeeper(args.mint_csv).spending_category_frequency())
-    
+    print(Bookkeeper(args.mint_csv).top_categories())
+    print(Bookkeeper(args.mint_csv).day_of_week_summary())
