@@ -208,7 +208,7 @@ class Bookkeeper:
             user input.
         """
 
-   def day_of_week_summary(self): # Sophia
+    def day_of_week_summary(self): # Sophia
        """Creates dataframe with summary values for the days of the week.
        
        Returns:
@@ -264,6 +264,7 @@ class Bookkeeper:
         summary_df = pd.concat([s2,s3,s4,s5,s6], axis = 1)
         print("\nReturns a summary data frame.")
         return summary_df
+    
     def top_subcategory(self, category, amount = 5): # Sophia
        """Finds top transaction type within a specific category
       
