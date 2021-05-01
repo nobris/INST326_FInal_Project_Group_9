@@ -184,7 +184,7 @@ class Bookkeeper:
             month_plot((unsure what datatype this would be)): bar plot that displays
             total spending in each month
         """
-    def top_categories(): # Tristan
+    def top_categories(self): # Tristan
         """Returns the top 5 categories the user spends their money on.
             
         Returns:
@@ -208,21 +208,19 @@ class Bookkeeper:
             user input.
         """
 
-    def day_of_week_summary(self): # Sophia
-        
-       """Creates dataframe with summary values for the days of the week.
+    def day_of_week_summary(self): # Sophia       
+        """Creates dataframe with summary values for the days of the week.
        
        Returns:
            summary_df(df): dataframe containing mean, median, minimum, maximum 
            amount and average amount of transactions used for the days of the week.
-       """
+        """
         # adds day of the week to data frame
         df = self.transactions
         s1 = df["Date"]
         dow_list = []
         for i in s1:
-            (month, day, year) = i.split("/")
-            day_of_week = datetime.date(int(year), int(month), int(day)).strftime("%A")
+            day_of_week = i.strftime("%A")
             dow_list.append(day_of_week)
         df["Day of Week"] = pd.Series(dow_list)
         print("\nAdded the day of the week to the data frame to the correseponding date.")
@@ -324,3 +322,4 @@ if __name__ == "__main__":
     print("\n")
     print(Bookkeeper(args.mint_csv).spending_category_frequency())
     print(Bookkeeper(args.mint_csv).top_categories())
+    print(Bookkeeper(args.mint_csv).day_of_week_summary())
