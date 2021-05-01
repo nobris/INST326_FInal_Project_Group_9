@@ -209,6 +209,7 @@ class Bookkeeper:
         """
 
     def day_of_week_summary(self): # Sophia
+        
        """Creates dataframe with summary values for the days of the week.
        
        Returns:
