@@ -189,6 +189,8 @@ class Bookkeeper:
         amount related to the category.
 
         Args:
+            amt (int): the argument for the top amount of categories the user
+            would like to view.
             start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
             end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.
 
@@ -214,23 +216,34 @@ class Bookkeeper:
 
         df_cat = df[['Category', 'Amount']].groupby('Category', as_index = False).sum().sort_values('Amount', ascending=False).head(amt)
         return df_cat
-    def search_transactions(self, desc): # Tristan
+    def search_transactions(self, desc, start_date = 0, end_date = 0): # Tristan
         """Displays transactions where the description matches what the user
         inputs in the argument -d.
         
         Args: 
             desc (str): the word(s) to be searched for within the transactions
             file
+            start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
+            end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.
 
         Side Effects:
             Prints statements telling the user whether their search found
             results or not.
 
         Returns:
-            A new dataframe sorted by date based on the price range the
-            user input.
+            A list of rows containing transactions that match a description
+            based on what the user input in their arguments.
         """
-        df = self.transactions
+        if start_date == 0:
+            start_date = self.earliest
+            
+        if end_date == 0:
+            end_date = self.latest
+
+        date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
+
+        df = self.transactions[date_filter]
+
         lower_df = df["Description"].str.lower()
         search = df[lower_df.str.contains(desc.lower())]
         if search.empty:
@@ -357,7 +370,7 @@ if __name__ == "__main__":
     print(Bookkeeper(args.mint_csv).top_categories(args.amt, args.start_date, args.end_date).to_string(index = False))
     if args.desc != None:
         try:
-            print(Bookkeeper(args.mint_csv).search_transactions(args.desc).to_string(index = False))
+            print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date).to_string(index = False))
         except:
-            print(Bookkeeper(args.mint_csv).search_transactions(args.desc))
+            print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date))
     print(Bookkeeper(args.mint_csv).day_of_week_summary())
