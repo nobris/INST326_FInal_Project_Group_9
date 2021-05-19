@@ -157,22 +157,33 @@ class Bookkeeper:
                 function congratulates the user, letting them 
                 know what they could do with the extra money.
         """
-    def spending_category_frequency(self): # Tyler
+    def spending_category_frequency(self, start_date=0, end_date=0): # Tyler
         """ This method creates a frequency table to display the frequency/count of each
         spending category throughout the user's transaction history
         
         Args: 
             transactions(df): the dataframe from which the category frequency table will 
             built off of
+            start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
+            end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.
             
         Returns:
             category_frequency_table(df): dataframe that displays frequency/count of each
             spending category 
         """
         print("\n Now, we will provide a frequency table of spending categories you use the most.")
-        df = self.transactions 
-        category_frequency = pd.crosstab(index = df['Category'], columns = 'count').sort_values(['count'], ascending = False)
-        print(category_frequency)
+        if start_date == 0:
+            start_date = self.earliest
+            
+        if end_date == 0:
+            end_date = self.latest
+
+        date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
+        
+        df = self.transactions[date_filter]
+         
+        category_frequency = pd.crosstab(index = df['Category'], columns = 'count').sort_values(['count'], ascending = False).head(5)
+        return category_frequency
         
     def mint_plot(mint): # Tyler
         """Creates a bar plot using MatLab that displays total spending in each 
@@ -186,9 +197,17 @@ class Bookkeeper:
             month_plot((unsure what datatype this would be)): bar plot that displays
             total spending in each month
         """
-    def top_categories(self): # Tristan
-        """Returns the top 5 categories the user spends their money on.
-            
+    def top_categories(self, amt = 5, start_date = 0, end_date = 0): # Tristan
+        """Returns the top 5 categories the user spends their money on and the
+        amount related to the category.
+        Args:
+            amt (int): the argument for the top amount of categories the user
+            would like to view.
+            start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
+            end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.
+        Side Effects:
+            Prints a statement showing the user the data they are looking at in
+            the terminal.
         Returns:
             list: A list of the top 5 categories the user spends their money on
             from most amount of money spent to least amount spent.
@@ -201,10 +220,13 @@ class Bookkeeper:
         """Shows a list of transaction based on a price range.
         
         Args: 
-            mint(df): the dataframe of mint transactions which will calculate
-            based on values within.
-            l_price (float): the lowest price included in the range.
-            h_price (float): the highest price included in the range.
+            desc (str): the word(s) to be searched for within the transactions
+            file
+            start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
+            end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.
+        Side Effects:
+            Prints statements telling the user whether their search found
+            results or not.
         Returns:
             A new dataframe sorted by date based on the price range the
             user input.
@@ -358,8 +380,12 @@ if __name__ == "__main__":
     print("\n **Thank you for using Team 9's 'Smart Money' Analyzer for your Mint data!**")
     # Instantiate the class
     print(Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account))
-    print("\n")
-    print(Bookkeeper(args.mint_csv).spending_category_frequency())
-    print(Bookkeeper(args.mint_csv).top_categories())
+    print(Bookkeeper(args.mint_csv).spending_category_frequency(args.start_date, args.end_date))
+    print(Bookkeeper(args.mint_csv).top_categories(args.amt, args.start_date, args.end_date).to_string(index = False))
+    if args.desc != None:
+        try:
+            print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date).to_string(index = False))
+        except:
+            print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date))
     print(Bookkeeper(args.mint_csv).day_of_week_summary())
     print(Bookkeeper(args.mint_csv).compare_spendings())
