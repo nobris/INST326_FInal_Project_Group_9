@@ -54,6 +54,7 @@ class Bookkeeper:
         # earliest and most recent dates from the user's financial transactions
         self.earliest = str(min(self.transactions["Date"].dt.date))
         self.latest = str(max(self.transactions["Date"].dt.date))
+        
     def suspicious_charges(self, start_date=0, end_date=0, account = None): # Walesia
         """ This method identifies unusual and potentially suspicious transactions.
             
@@ -69,7 +70,6 @@ class Bookkeeper:
             will be flagged as a suspicious transaction and returned to the user.
         
         Args: 
-            mint (df): dataframe of the user's financial transactions
             start_date (str): optional start date in MM-DD-YYYY. Defaults to None.
             end_date (str): optional end date in MM-DD-YYYY. Defaults to None.
             account (str): user 'Account Name' to search. Defaults to None.
@@ -77,81 +77,192 @@ class Bookkeeper:
         Side Effects: 
             Prints a congratulatory message if the scan did not find any potentially 
             suspicious charges. If suspicious charges were found, prints a message
-            indicating so.
+            indicating so, and a list of any suspicious charges for the accounts.
             
-        Returns:
-            suspicious_charges (df): Series consisting of the suspicious charges, 
-                sorted by date and then amount.
         """
+        # Message to user that this method is running
+        print("\n First, let's run a scan to identify suspicious charges... just a moment...\n")
         
-        # if user does not specify an Account Name, choose one randomly from the file
+        # Wait 2 seconds before next code block
+        time.sleep(2)
         
+        # if start date and end date aren't specified, scan all the data
         if start_date == 0:
             start_date = self.earliest
             
         if end_date == 0:
             end_date = self.latest
         
+        # if user does not specify an Account Name, go through all of them
         if account is None:
-            account = random.choice(list(self.transactions["Account Name"].unique()))
+            accounts = list(self.transactions["Account Name"].unique())
         
-        # create date and account type filters
-        account_filter = self.transactions["Account Name"] == account
-        date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
-        # apply filters, assign to new dataframe variable
-        ad_filter = self.transactions[account_filter & date_filter]
-        
-        # define quartiles based on account charges
-        q1 = ad_filter.quantile(q=0.25, axis=0, numeric_only=True, interpolation='linear')
-        q3 = ad_filter.quantile(q=0.75, axis=0, numeric_only=True, interpolation='linear')
-        # inner quartile range
-        iqr = q3-q1
-        # outlier formula for suspicious charges
-        lower = (q1 - (3*iqr))
-        upper = (q3 + (3*iqr))
-        # filter for debit charges falling outside of outlier fences.
-        suspicious_charges = ad_filter[(ad_filter["Amount"] < float(lower)) |
-                                    (ad_filter["Amount"] > float(upper)) &
-                                    (ad_filter["Transaction Type"] == "debit")]
-        
-        # Message to user that this method is running
-        print("\n First, let's run a scan to identify suspicious charges... just a moment...\n")
-        
-        # Wait 5 seconds before next code block
-        time.sleep(3)
-        
-        # no suspicious charges found
-        if suspicious_charges.empty:
-            return f"Guess what? Great news! Our scan did not find any potentially unusual charges for your {account} account between {start_date} and {end_date}."
-        
-        # what to do if charges were found
-        else:
-            print(f"Uh oh! Our scan found these potentially suspicious charges for your {account}")
-            print(f"account between {start_date} and {end_date}.")
-            print("Check them out here: \n")
+            for x in accounts: 
+                
+                # create date and account type filters
+                account_filter = self.transactions["Account Name"] == x
+                date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
+                # apply filters, assign to new dataframe variable
+                ad_filter = self.transactions[account_filter & date_filter]
+                
+                # define quartiles based on account charges
+                q1 = ad_filter.quantile(q=0.25, axis=0, numeric_only=True, interpolation='linear')
+                q3 = ad_filter.quantile(q=0.75, axis=0, numeric_only=True, interpolation='linear')
+                # inner quartile range
+                iqr = q3-q1
+                # outlier formula for suspicious charges
+                lower = (q1 - (3*iqr))
+                upper = (q3 + (3*iqr))
+                # filter for debit charges falling outside of outlier fences.
+                suspicious_charges = ad_filter[(ad_filter["Amount"] < float(lower)) |
+                                            (ad_filter["Amount"] > float(upper)) &
+                                            (ad_filter["Transaction Type"] == "debit")]
+                        
+                # if no suspicious charges were found
+                if suspicious_charges.empty:
+                    print(f"Our scan did not find any potentially unusual charges for your {x} account between {start_date} and {end_date}. \n")
+                    time.sleep(1)
+                
+                # what to do if charges were found
+                elif not suspicious_charges.empty:
+                    print(f"Our scan found these potentially suspicious charges for your {x}")
+                    print(f"account between {start_date} and {end_date}. Check them out below: \n")
+                    
+                    # Return list of suspicous charges, dropping duplicate charges, 
+                    # since frequency would indicate user was likely aware and
+                    # authorized these purchases.
+                    print(suspicious_charges.drop_duplicates(subset="Description", keep=False, inplace=False))
+                    print(" ")
+                    time.sleep(1)
+                        
+        # if the user does specify an account, use that one
+        elif account is not None:
+            user_account = account
             
-            # Return list of suspicous charges, dropping duplicate charges, 
-            # since frequency would indicate user was likely aware and
-            # authorized these purchases.
-            return suspicious_charges.drop_duplicates(subset="Description", keep=False, inplace=False)
+            # create date and account type filters
+            account_filter = self.transactions["Account Name"] == user_account
+            date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
+            # apply filters, assign to new dataframe variable
+            ad_filter = self.transactions[account_filter & date_filter]
             
-    def financial_advice(transactions, start_date = None, end_date = None): # Walesia
+            # define quartiles based on account charges
+            q1 = ad_filter.quantile(q=0.25, axis=0, numeric_only=True, interpolation='linear')
+            q3 = ad_filter.quantile(q=0.75, axis=0, numeric_only=True, interpolation='linear')
+            # inner quartile range
+            iqr = q3-q1
+            # outlier formula for suspicious charges
+            lower = (q1 - (3*iqr))
+            upper = (q3 + (3*iqr))
+            
+            # filter for debit charges falling outside of outlier fences.
+            suspicious_charges = ad_filter[(ad_filter["Amount"] < float(lower)) |
+                                        (ad_filter["Amount"] > float(upper)) &
+                                        (ad_filter["Transaction Type"] == "debit")]
+                    
+            # if no suspicious charges were found
+            if suspicious_charges.empty:
+                print(f"Our scan did not find any potentially unusual charges for your {user_account}")
+                print(f"account between {start_date} and {end_date}. \n")
+                time.sleep(1)
+            
+            # what to do if charges were found
+            else:
+                print(f"Our scan found these potentially suspicious charges for your {user_account}")
+                print(f"account between {start_date} and {end_date}. Check them out below: \n")
+                
+                # Print list of suspicous charges, dropping duplicate charges, 
+                # since frequency would indicate user was likely aware and
+                # authorized these purchases.
+                print(suspicious_charges.drop_duplicates(subset="Description", keep=False, inplace=False))
+                time.sleep(1)
+        
+    def financial_advice(self, start_date = None, end_date = None): # Walesia
         """ For the user specified date range (if applied) this method will 
             calculate income vs spending and offer financial advice.
             
-        Args: 
-            mint (df): user transaction df
-        
-        Returns: 
-            financial_advice (str): general advice statements about user spending. 
+            if expenses > income, function provides
+            some strategies to help save more money.
             
-                If expenses > income, function provides
-                some strategies to help save more money.
-                
-                If expenses < income, and difference is < $300,
-                function congratulates the user, letting them 
-                know what they could do with the extra money.
+            if expenses = income, function provides
+            some strategies to start budgeting.
+            
+            if expenses < income, and difference is < $300,
+            function congratulates the user, letting them 
+            know what they could do with the extra money.
+            
+        Args: 
+            start_date (str): optional start date in MM-DD-YYYY. Defaults to None.
+            end_date (str): optional end date in MM-DD-YYYY. Defaults to None.
+        
+        Side Effects: 
+            Prints some general advice statements about user spending. 
         """
+        # if start date and end date aren't specified, scan all the data
+        if start_date == 0:
+            start_date = self.earliest
+            
+        if end_date == 0:
+            end_date = self.latest
+            
+        # Message to user that this method is running
+        print(" ")
+        print(f"Next we'll examine your income vs spending from {start_date} to {end_date}...")
+        print(" ")        
+        
+        # Wait 2 seconds before next code block
+        time.sleep(2)
+        
+        # create date filter
+        date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
+        
+        # apply filter, assign to new dataframe variable
+        apply_dates = self.transactions[date_filter]        
+
+        # Split-Apply-Combine in single statements to create total debits and credits
+        debits = apply_dates[apply_dates["Transaction Type"] == "debit"].groupby("Transaction Type")["Amount"].sum()
+        credits = apply_dates[apply_dates["Transaction Type"] == "credit"].groupby("Transaction Type")["Amount"].sum()
+        
+        income = int(credits)
+        
+        #subtract debits from credits to get net expenses
+        net_total = int(credits) - int(debits)
+                
+        # if user had a negative net income / spent more than they earned
+        if net_total < 0:
+            advice = (f" \t Watch out, you spent ${abs(net_total)} more than you earned. \n"
+                      "\n"
+                      f"\t Check out the rest of the features in our program to figure \n"
+                      f"\t out where your money is going and how much you might be able \n"
+                      f"\t to cut back on some of your spending."
+            )     
+            
+            print(advice)
+            
+        # if user spent exactly how much they earned
+        elif net_total == 0: 
+            advice = (f" \t Our reports show that you spent exactly as much as you earned. \n"
+                      "\n"
+                      f"\t Writing out a detailed budget is one of the best steps you can take \n"
+                      f"\t to help you stay on track and save more money. \n"
+            )     
+            
+            print(advice)
+            
+        # if user had a net positive income / earned more than they spent
+        elif net_total > 0:
+            
+            advice = (f" \t Keep up the great work! You managed to put away ${abs(net_total)}! \n"
+                      "\n"
+                      f"\t If you haven't already, make sure sure you build up an emergency fund \n"
+                      f"\t for any unexpected expenses. \n"
+                      "\n"
+                      f"\t After that's taken care of, you may want to consider opening up an \n"
+                      f"\t investment vehicle like a Roth IRA or brokerage account."
+            )     
+            
+            print(advice)
+            print(" ")
+            
     def spending_category_frequency(self, start_date=0, end_date=0): # Tyler
         """ This method creates a frequency table to display the frequency/count of each
         spending category throughout the user's transaction history
@@ -267,23 +378,31 @@ class Bookkeeper:
         else:
             print("\n Here are transactions where descriptions matched what you searched for:\n")
             return search
-    def day_of_week_summary(self): # Sophia       
+    def day_of_week_summary(self, start_date = 0, end_date = 0): # Sophia       
         """Creates dataframe with summary values for the days of the week.
-       
+        
+       Args:
+            start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
+            end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.   
+        Side effects:
+            Writes to stdout.    
        Returns:
            summary_df(df): dataframe containing mean, median, minimum, maximum 
            amount and average amount of transactions used for the days of the week.
-        Side effects:
-           Writes to stdout. 
         """
-        # adds day of the week to data frame
-        df = self.transactions
+        df = self.transactions       
+        if start_date == 0:
+            start_date = self.earliest            
+        if end_date == 0:
+            end_date = self.latest
+        date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
+        df = self.transactions[date_filter]
+                   
         dow_list = []
         for i in df["Date"]:
             dow_list.append(i.strftime("%A"))
         df["Day of Week"] = pd.Series(dow_list)
         
-        # creates summary data frame
         avg_transactions = []
         means = []
         medians = []
@@ -292,36 +411,40 @@ class Bookkeeper:
         days_list = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
         
         for i in days_list:
-            #calculates average amount of transactions   
             avg_transactions.append(round(df[df["Day of Week"]==i].groupby("Date")["Date"].count().mean(),2))
-            #calculates mean amount spent
             means.append(round(df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().mean(),2))
-            
-            #calculates median amount spent
             medians.append(round(df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().median(),2))
-            
-            #finds minimum amount spent
             mins.append(round(df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().min(),2))
-            
-            #finds maximum amount spent
             maxs.append(round(df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().max(),2))
-        # creates series for each summary value
+
         s2 = pd.Series(avg_transactions, index = days_list, name = "Avg Transactions")
         s3 = pd.Series(means, index = days_list, name = "Mean")
         s4 = pd.Series(medians, index = days_list, name = "Median")
         s5 = pd.Series(mins, index = days_list, name = "Minimum")
         s6 = pd.Series(maxs, index = days_list, name = "Maximum")
-        # concatenates the series
+
         summary_df = pd.concat([s2,s3,s4,s5,s6], axis = 1)
         print("\nHere is your summary information for the days of the week:")
         return summary_df
-    def compare_spendings(self): # Sophia
+    
+    def compare_spendings(self, start_date = 0, end_date = 0): # Sophia
        """Compares spendings between most recent weeks, months, and years
-      
+       
+       Args:
+           start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
+           end_date (str): optional end date in MM-DD-YYYY. Defaults to 0. 
+       Returns:
+           Empty str.     
        Side effects:
-           Writes to stdout.      
+           Prints comparison statements.      
        """
-       df = self.transactions
+       df = self.transactions       
+       if start_date == 0:
+           start_date = self.earliest            
+       if end_date == 0:
+           end_date = self.latest
+       date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
+       df = self.transactions[date_filter]
        
        week_list = []
        for i in df["Date"]:
@@ -362,8 +485,8 @@ class Bookkeeper:
                        f"the same as the {itl.index.name.lower()} of {itl.index[-i-1]} " 
                        f"at ${itl['Amount'][j]:.2f}.")
                if i == 5 or i == itl.index.size - 1:
-                   break        
-       
+                   break  
+       return " "            
        
        
 def parse_args(arglist): # Group
@@ -412,15 +535,17 @@ if __name__ == "__main__":
     
     # Instantiate the class
     
-    print(Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account))
+    Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account)
+    Bookkeeper(args.mint_csv).spending_category_frequency(args.start_date, args.end_date)
     
-    """ print(Bookkeeper(args.mint_csv).spending_category_frequency(args.start_date, args.end_date))
-    print(Bookkeeper(args.mint_csv).mint_plot(args.start_date, args.end_date))
-    print(Bookkeeper(args.mint_csv).top_categories(args.amt, args.start_date, args.end_date).to_string(index = False))
+    Bookkeeper(args.mint_csv).mint_plot(args.start_date, args.end_date)
+    Bookkeeper(args.mint_csv).top_categories(args.amt, args.start_date, args.end_date).to_string(index = False)
+    
     if args.desc != None:
         try:
-            print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date).to_string(index = False))
+            Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date).to_string(index = False)
         except:
-            print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date))
-    print(Bookkeeper(args.mint_csv).day_of_week_summary()) 
-    print(Bookkeeper(args.mint_csv).compare_spendings()) """
+            Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date)
+    
+    Bookkeeper(args.mint_csv).day_of_week_summary(args.start_date, args.end_date)
+    Bookkeeper(args.mint_csv).compare_spendings(args.start_date, args.end_date)

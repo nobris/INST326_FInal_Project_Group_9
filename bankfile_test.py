@@ -16,5 +16,10 @@ def test_suspicious_transactions():
     all of the user's available accounts.
     """ 
     
-    
+def test_spending_category_frequency():
+    """Does Bookkeeper.spending_category_frequency return results from the dataframe
+    based on 
+    """
+    r = bankfile.Bookkeeper("transactions.csv")
+    r2 = r.spending_category_frequency()
     
