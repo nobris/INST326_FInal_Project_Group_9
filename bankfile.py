@@ -266,7 +266,7 @@ class Bookkeeper:
         else:
             print("\n Here are transactions where descriptions matched what you searched for:\n")
             return search
-    def day_of_week_summary(self): # Sophia       
+    def day_of_week_summary(self, start_date = 0, end_date = 0): # Sophia       
         """Creates dataframe with summary values for the days of the week.
        
        Returns:
@@ -275,14 +275,19 @@ class Bookkeeper:
         Side effects:
            Writes to stdout. 
         """
-        # adds day of the week to data frame
-        df = self.transactions
+        df = self.transactions       
+        if start_date == 0:
+            start_date = self.earliest            
+        if end_date == 0:
+            end_date = self.latest
+        date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
+        df = self.transactions[date_filter]
+                   
         dow_list = []
         for i in df["Date"]:
             dow_list.append(i.strftime("%A"))
         df["Day of Week"] = pd.Series(dow_list)
         
-        # creates summary data frame
         avg_transactions = []
         means = []
         medians = []
@@ -291,36 +296,35 @@ class Bookkeeper:
         days_list = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
         
         for i in days_list:
-            #calculates average amount of transactions   
             avg_transactions.append(round(df[df["Day of Week"]==i].groupby("Date")["Date"].count().mean(),2))
-            #calculates mean amount spent
             means.append(round(df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().mean(),2))
-            
-            #calculates median amount spent
             medians.append(round(df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().median(),2))
-            
-            #finds minimum amount spent
             mins.append(round(df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().min(),2))
-            
-            #finds maximum amount spent
             maxs.append(round(df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().max(),2))
-        # creates series for each summary value
+
         s2 = pd.Series(avg_transactions, index = days_list, name = "Avg Transactions")
         s3 = pd.Series(means, index = days_list, name = "Mean")
         s4 = pd.Series(medians, index = days_list, name = "Median")
         s5 = pd.Series(mins, index = days_list, name = "Minimum")
         s6 = pd.Series(maxs, index = days_list, name = "Maximum")
-        # concatenates the series
+
         summary_df = pd.concat([s2,s3,s4,s5,s6], axis = 1)
         print("\nHere is your summary information for the days of the week:")
         return summary_df
-    def compare_spendings(self): # Sophia
+    
+    def compare_spendings(self, start_date = 0, end_date = 0): # Sophia
        """Compares spendings between most recent weeks, months, and years
       
        Side effects:
            Writes to stdout.      
        """
-       df = self.transactions
+       df = self.transactions       
+       if start_date == 0:
+           start_date = self.earliest            
+       if end_date == 0:
+           end_date = self.latest
+       date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
+       df = self.transactions[date_filter]
        
        week_list = []
        for i in df["Date"]:
@@ -361,8 +365,8 @@ class Bookkeeper:
                        f"the same as the {itl.index.name.lower()} of {itl.index[-i-1]} " 
                        f"at ${itl['Amount'][j]:.2f}.")
                if i == 5 or i == itl.index.size - 1:
-                   break        
-       
+                   break  
+       return " "            
        
        
 def parse_args(arglist): # Group
@@ -418,5 +422,5 @@ if __name__ == "__main__":
             print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date).to_string(index = False))
         except:
             print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date))
-    print(Bookkeeper(args.mint_csv).day_of_week_summary()) 
-    print(Bookkeeper(args.mint_csv).compare_spendings())
+    print(Bookkeeper(args.mint_csv).day_of_week_summary(args.start_date, args.end_date)) 
+    print(Bookkeeper(args.mint_csv).compare_spendings(args.start_date, args.end_date))
