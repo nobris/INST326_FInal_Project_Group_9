@@ -589,7 +589,7 @@ if __name__ == "__main__":
     
     print("\n **Welcome to Team 9's 'Smart Money' Analyzer for your Mint data!**\n")
     
-    Instantiate the class
+    #Instantiate the class
     
     Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account)
     Bookkeeper(args.mint_csv).financial_advice(args.start_date, args.end_date)
