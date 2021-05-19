@@ -216,6 +216,7 @@ class Bookkeeper:
         df_cat = df[['Category', 'Amount']].groupby('Category').sum().sort_values('Amount', ascending=False).head(5)
         print("\nHere are your top 5 spending categories and the amounts you spend for each of them:\n")
         print(df_cat)
+        
     def price_range(mint): # Tristan
         """Shows a list of transaction based on a price range.
         
@@ -333,10 +334,7 @@ class Bookkeeper:
                        f"at ${itl['Amount'][j]:.2f}.")
                if i == 5 or i == itl.index.size - 1:
                    break        
-       
-       
-       
-       
+
 def parse_args(arglist): # Group
     """ This function will parse command-line arguments.
     
@@ -378,14 +376,20 @@ if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
     
     print("\n **Thank you for using Team 9's 'Smart Money' Analyzer for your Mint data!**")
+    
     # Instantiate the class
+    
     print(Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account))
+    
     print(Bookkeeper(args.mint_csv).spending_category_frequency(args.start_date, args.end_date))
-    print(Bookkeeper(args.mint_csv).top_categories(args.amt, args.start_date, args.end_date).to_string(index = False))
-    if args.desc != None:
-        try:
-            print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date).to_string(index = False))
-        except:
-            print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date))
+    
+    #print(Bookkeeper(args.mint_csv).top_categories(args.amt, args.start_date, args.end_date).to_string(index = False))
+    # if args.desc != None:
+    #     try:
+    #         print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date).to_string(index = False))
+    #     except:
+    #         print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date))
+            
     print(Bookkeeper(args.mint_csv).day_of_week_summary())
+    
     print(Bookkeeper(args.mint_csv).compare_spendings())
