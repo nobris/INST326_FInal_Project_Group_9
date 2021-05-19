@@ -12,6 +12,7 @@ import calendar
 import datetime
 import random
 import time
+from datetime import timedelta 
 
 class Bookkeeper: 
     """ This class reads the Mint transactions.csv file for use in following 
@@ -125,7 +126,8 @@ class Bookkeeper:
         
         # no suspicious charges found
         if suspicious_charges.empty:
-            return f"Guess what? Great news! Our scan did not find any potentially unusual charges for your {account} account between {start_date} and {end_date}."
+            print("Guess what? Great news! Our scan did not find any potentially unusual charges")
+            print(f"for your {account} account between {start_date} and {end_date}.")
         
         # what to do if charges were found
         else:
@@ -170,7 +172,7 @@ class Bookkeeper:
         print("\n Now, we will provide a frequency table of spending categories you use the most.")
         df = self.transactions 
         category_frequency = pd.crosstab(index = df['Category'], columns = 'count').sort_values(['count'], ascending = False)
-        return category_frequency
+        print(category_frequency)
         
     def mint_plot(mint): # Tyler
         """Creates a bar plot using MatLab that displays total spending in each 
@@ -184,89 +186,46 @@ class Bookkeeper:
             month_plot((unsure what datatype this would be)): bar plot that displays
             total spending in each month
         """
-    def top_categories(self, amt = 5, start_date = 0, end_date = 0): # Tristan
-        """Returns the top 5 categories the user spends their money on and the
-        amount related to the category.
-
-        Args:
-            amt (int): the argument for the top amount of categories the user
-            would like to view.
-            start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
-            end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.
-
-        Side Effects:
-            Prints a statement showing the user the data they are looking at in
-            the terminal.
-
+    def top_categories(self): # Tristan
+        """Returns the top 5 categories the user spends their money on.
+            
         Returns:
-            dataframe: A datafrane of the top 5 categories the user spends their money on
+            list: A list of the top 5 categories the user spends their money on
             from most amount of money spent to least amount spent.
         """
+        df = self.transactions
+        df_cat = df[['Category', 'Amount']].groupby('Category').sum().sort_values('Amount', ascending=False).head(5)
         print("\nHere are your top 5 spending categories and the amounts you spend for each of them:\n")
-
-        if start_date == 0:
-            start_date = self.earliest
-            
-        if end_date == 0:
-            end_date = self.latest
-
-        date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
-        
-        df = self.transactions[date_filter]
-
-        df_cat = df[['Category', 'Amount']].groupby('Category', as_index = False).sum().sort_values('Amount', ascending=False).head(amt)
-        return df_cat
-    def search_transactions(self, desc, start_date = 0, end_date = 0): # Tristan
-        """Displays transactions where the description matches what the user
-        inputs in the argument -d.
+        print(df_cat)
+    def price_range(mint): # Tristan
+        """Shows a list of transaction based on a price range.
         
         Args: 
-            desc (str): the word(s) to be searched for within the transactions
-            file
-            start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
-            end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.
-
-        Side Effects:
-            Prints statements telling the user whether their search found
-            results or not.
-
+            mint(df): the dataframe of mint transactions which will calculate
+            based on values within.
+            l_price (float): the lowest price included in the range.
+            h_price (float): the highest price included in the range.
         Returns:
-            A list of rows containing transactions that match a description
-            based on what the user input in their arguments.
+            A new dataframe sorted by date based on the price range the
+            user input.
         """
-        if start_date == 0:
-            start_date = self.earliest
-            
-        if end_date == 0:
-            end_date = self.latest
 
-        date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
-
-        df = self.transactions[date_filter]
-
-        lower_df = df["Description"].str.lower()
-        search = df[lower_df.str.contains(desc.lower())]
-        if search.empty:
-            return("\nYour search resulted in zero matches!")
-        else:
-            print("\n Here are transactions where descriptions matched what you searched for:\n")
-            return search
     def day_of_week_summary(self): # Sophia       
         """Creates dataframe with summary values for the days of the week.
        
        Returns:
            summary_df(df): dataframe containing mean, median, minimum, maximum 
            amount and average amount of transactions used for the days of the week.
+        Side effects:
+           Writes to stdout. 
         """
         # adds day of the week to data frame
         df = self.transactions
-        s1 = df["Date"]
+
         dow_list = []
-        for i in s1:
-            day_of_week = i.strftime("%A")
-            dow_list.append(day_of_week)
+        for i in df["Date"]:
+            dow_list.append(i.strftime("%A"))
         df["Day of Week"] = pd.Series(dow_list)
-        print("\nAdded the day of the week to the data frame to the correseponding date.")
         
         # creates summary data frame
         avg_transactions = []
@@ -274,28 +233,24 @@ class Bookkeeper:
         medians = []
         mins = []
         maxs = []
-        days_list = list(set(list(df["Day of Week"])))
+
+        days_list = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
         
         for i in days_list:
-            #calculates average number of transactions 
-            avg_transaction = df[df["Day of Week"]==i].groupby("Date")["Date"].count().mean()    
-            avg_transactions.append(avg_transaction)
+            #calculates average amount of transactions   
+            avg_transactions.append(round(df[df["Day of Week"]==i].groupby("Date")["Date"].count().mean(),2))
 
             #calculates mean amount spent
-            mean = df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().mean()
-            means.append(mean)
+            means.append(round(df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().mean(),2))
             
             #calculates median amount spent
-            median = df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().median()
-            medians.append(median)
+            medians.append(round(df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().median(),2))
             
             #finds minimum amount spent
-            minimum = df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().min()
-            mins.append(minimum)
+            mins.append(round(df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().min(),2))
             
             #finds maximum amount spent
-            maximum = df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().max()
-            maxs.append(maximum)
+            maxs.append(round(df[df["Day of Week"]==i].groupby("Date")["Amount"].sum().max(),2))
         # creates series for each summary value
         s2 = pd.Series(avg_transactions, index = days_list, name = "Avg Transactions")
         s3 = pd.Series(means, index = days_list, name = "Mean")
@@ -304,20 +259,61 @@ class Bookkeeper:
         s6 = pd.Series(maxs, index = days_list, name = "Maximum")
         # concatenates the series
         summary_df = pd.concat([s2,s3,s4,s5,s6], axis = 1)
-        print("\nReturns a summary data frame.")
+        print("\nHere is your summary information for the days of the week:")
         return summary_df
     
-    def top_subcategory(self, category, amount = 5): # Sophia
-       """Finds top transaction type within a specific category
+    def compare_spendings(self): # Sophia
+       """Compares spendings between most recent weeks, months, and years
       
-       Args:
-           category(str): the category that gets used
-           amount(int): optional parameter that limits the amount returned
-      
-       Returns:
-           top_transactions(dict): dictionary where key is transaction type and
-           value is amount spent limited to the amount       
+       Side effects:
+           Writes to stdout.      
        """
+       df = self.transactions
+       
+       week_list = []
+       for i in df["Date"]:
+           week_list.append((i - timedelta(i.isocalendar()[2] - 1)).date())
+       df["Week"] = pd.Series(week_list)
+       
+       df["Month"] = df["Date"].dt.strftime("%Y-%m")
+       
+       df["Year"] = df["Date"].dt.strftime("%Y")
+
+       wk = df.groupby("Week")["Amount"].sum().to_frame()
+       mth = df.groupby("Month")["Amount"].sum().to_frame()
+       yr = df.groupby("Year")["Amount"].sum().to_frame()
+       
+       wk["Change"] = wk["Amount"].pct_change()
+       mth["Change"] = mth["Amount"].pct_change()
+       yr["Change"] = yr["Amount"].pct_change()
+       
+       for itl in [wk, mth, yr]:
+           i = 0
+           print(f"\nHere are how your {itl.index.name.lower()}ly spendings compare:")
+           for j in reversed(itl.index):
+               i += 1
+               if itl['Change'][j] > 0:
+                   print(
+                       f"Your spendings for the {itl.index.name.lower()} of {j} is " 
+                       f"{itl['Change'][j] * 100:.2f}% higher than the " 
+                       f"{itl.index.name.lower()} of {itl.index[-i-1]} from " 
+                       f"${itl['Amount'][-i-1]:.2f} to ${itl['Amount'][j]:.2f}.")
+               elif itl['Change'][j] < 0:
+                   print(
+                       f"Your spendings for the {itl.index.name.lower()} of {j} is "
+                       f"{abs(itl['Change'][j]) * 100:.2f}% lower than "
+                       f"the {itl.index.name.lower()} of {itl.index[-i-1]} from "
+                       f"${itl['Amount'][-i-1]:.2f} to ${itl['Amount'][j]:.2f}.")
+               else:
+                   print(
+                       f"Your spendings for the {itl.index.name.lower()} of {j} is "
+                       f"the same as the {itl.index.name.lower()} of {itl.index[-i-1]} " 
+                       f"at ${itl['Amount'][j]:.2f}.")
+               if i == 5 or i == itl.index.size - 1:
+                   break        
+       
+       
+       
        
 def parse_args(arglist): # Group
     """ This function will parse command-line arguments.
@@ -351,10 +347,6 @@ def parse_args(arglist): # Group
                         help ="str specifying the end date range; MM-DD-YYYY format")
     parser.add_argument("-a", "--account", type = str, default = None,
                         help ="str specifying the financial account")
-    parser.add_argument("-c", "--amt", type = int, default = 5,
-                        help ="int amount for top categories")
-    parser.add_argument("-d", "--desc", type = str,
-                        help ="str specifying description search")
 
     return parser.parse_args(arglist)
 
@@ -366,11 +358,8 @@ if __name__ == "__main__":
     print("\n **Thank you for using Team 9's 'Smart Money' Analyzer for your Mint data!**")
     # Instantiate the class
     print(Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account))
+    print("\n")
     print(Bookkeeper(args.mint_csv).spending_category_frequency())
-    print(Bookkeeper(args.mint_csv).top_categories(args.amt, args.start_date, args.end_date).to_string(index = False))
-    if args.desc != None:
-        try:
-            print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date).to_string(index = False))
-        except:
-            print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date))
+    print(Bookkeeper(args.mint_csv).top_categories())
     print(Bookkeeper(args.mint_csv).day_of_week_summary())
+    print(Bookkeeper(args.mint_csv).compare_spendings())
