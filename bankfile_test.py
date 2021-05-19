@@ -10,3 +10,11 @@ def test_search_transactions():
     """
     r = bankfile.Bookkeeper("transactions.csv")
     r2 = r.search_transactions("spotif")
+    
+def test_suspicious_transactions():
+    """ This test checks whether the suspicious transactions test is searching
+    all of the user's available accounts.
+    """ 
+    
+    
+    
