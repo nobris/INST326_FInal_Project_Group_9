@@ -589,7 +589,7 @@ if __name__ == "__main__":
     
     print("\n **Welcome to Team 9's 'Smart Money' Analyzer for your Mint data!**\n")
     
-    # Instantiate the class
+    Instantiate the class
     
     Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account)
     Bookkeeper(args.mint_csv).financial_advice(args.start_date, args.end_date)
@@ -608,4 +608,6 @@ if __name__ == "__main__":
     Bookkeeper(args.mint_csv).day_of_week_summary(args.start_date, args.end_date)
     Bookkeeper(args.mint_csv).compare_spendings(args.start_date, args.end_date)
 
-    print("\n **Thank you for using our program!! We hope you found this data analysis useful!**\n")
+    print("\n *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*")
+    print("---Thank you for using our program!! We hope you found this data analysis useful!*---")
+    print("*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*")
