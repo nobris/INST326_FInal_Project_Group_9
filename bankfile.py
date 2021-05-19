@@ -414,7 +414,7 @@ if __name__ == "__main__":
     
     print(Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account))
     
-    print(Bookkeeper(args.mint_csv).spending_category_frequency(args.start_date, args.end_date))
+    """ print(Bookkeeper(args.mint_csv).spending_category_frequency(args.start_date, args.end_date))
     print(Bookkeeper(args.mint_csv).mint_plot(args.start_date, args.end_date))
     print(Bookkeeper(args.mint_csv).top_categories(args.amt, args.start_date, args.end_date).to_string(index = False))
     if args.desc != None:
@@ -423,4 +423,4 @@ if __name__ == "__main__":
         except:
             print(Bookkeeper(args.mint_csv).search_transactions(args.desc, args.start_date, args.end_date))
     print(Bookkeeper(args.mint_csv).day_of_week_summary()) 
-    print(Bookkeeper(args.mint_csv).compare_spendings())
+    print(Bookkeeper(args.mint_csv).compare_spendings()) """
