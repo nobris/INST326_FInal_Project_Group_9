@@ -475,7 +475,8 @@ class Bookkeeper:
         s6 = pd.Series(maxs, index = days_list, name = "Maximum")
 
         summary_df = pd.concat([s2,s3,s4,s5,s6], axis = 1)
-        print("\nHere is your summary information for the days of the week:")
+        print("\nHere is your summary information for the days of the week: \n")
+        time.sleep(1)
         print(summary_df)
         print("\n")
     
