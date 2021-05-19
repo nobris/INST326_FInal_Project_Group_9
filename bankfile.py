@@ -78,6 +78,8 @@ class Bookkeeper:
             Prints a congratulatory message if the scan did not find any potentially 
             suspicious charges. If suspicious charges were found, prints a message
             indicating so, and a list of any suspicious charges for the accounts.
+            The method also prints a statement letting the user know the method has
+            finished.
             
         """
         # Message to user that this method is running
@@ -199,6 +201,7 @@ class Bookkeeper:
         
         Side Effects: 
             Prints some general advice statements about user spending. 
+            Also prints a statement letting the user know the method has finished.
         """
         # if start date and end date aren't specified, scan all the data
         if start_date == 0:
@@ -282,7 +285,8 @@ class Bookkeeper:
             
         Side effects:
            Prints a category_frequency_table (df): dataframe that displays frequency/count of each
-            spending category. 
+           spending category. 
+           Also prints a statement letting the user know when the method has finished.
         """
         
         print("\n")
@@ -317,14 +321,14 @@ class Bookkeeper:
             start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
             end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.
             
-        Side effects:
-           Writes to stdout. 
+        Side Effects:
+           Writes to stdout, also prints a statement informing the user that the method has concluded 
            
         Returns:
-            month_plot: bar plot that displays
-            total spending in each month
+            month_plot: bar plot that displays the total spending in each month
         """
-        print("Here is a bar plot showing the months you have spent the most money, ordered from the smallest amount to largest amount.")
+        print("Here is a bar plot showing the months you have spent the most money,\n")
+        print("ordered from the smallest amount to largest amount.")
         print("\n")
         time.sleep(2)
         
@@ -364,7 +368,7 @@ class Bookkeeper:
             from most amount of money spent to least amount of money spent. 
             
             Also prints a statement showing the user the data they are looking at in
-            the terminal.
+            the terminal, and lets the user know when the method has concluded.
         """
         
         if start_date == 0:
@@ -430,11 +434,12 @@ class Bookkeeper:
        Args:
             start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
             end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.   
+            
         Side effects:
-            Writes to stdout.    
-       Returns:
-           summary_df(df): dataframe containing mean, median, minimum, maximum 
-           amount and average amount of transactions used for the days of the week.
+            Prints to stdout:
+           - summary_df(df): dataframe containing mean, median, minimum, maximum 
+           - amount and average amount of transactions used for the days of the week.
+           - statement telling the user that the function is finished.
         """
         df = self.transactions       
         if start_date == 0:
