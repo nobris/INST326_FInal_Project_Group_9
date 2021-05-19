@@ -268,12 +268,15 @@ class Bookkeeper:
             return search
     def day_of_week_summary(self, start_date = 0, end_date = 0): # Sophia       
         """Creates dataframe with summary values for the days of the week.
-       
+        
+       Args:
+            start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
+            end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.   
+        Side effects:
+            Writes to stdout.    
        Returns:
            summary_df(df): dataframe containing mean, median, minimum, maximum 
            amount and average amount of transactions used for the days of the week.
-        Side effects:
-           Writes to stdout. 
         """
         df = self.transactions       
         if start_date == 0:
@@ -314,9 +317,14 @@ class Bookkeeper:
     
     def compare_spendings(self, start_date = 0, end_date = 0): # Sophia
        """Compares spendings between most recent weeks, months, and years
-      
+       
+       Args:
+           start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
+           end_date (str): optional end date in MM-DD-YYYY. Defaults to 0. 
+       Returns:
+           Empty str.     
        Side effects:
-           Writes to stdout.      
+           Prints comparison statements.      
        """
        df = self.transactions       
        if start_date == 0:
