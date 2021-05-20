@@ -422,10 +422,11 @@ class Bookkeeper:
         search = df[lower_df.str.contains(desc.lower())]
         
         if search.empty:
-            return("\n Your search resulted in zero matches!")
+            print("\n Your search resulted in zero matches!")
         
         else:
             print("\n Here are transactions where descriptions matched what you searched for:\n")
+            print(search)
             return search
         
     def day_of_week_summary(self, start_date = 0, end_date = 0): # Sophia       
