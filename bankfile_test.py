@@ -64,8 +64,11 @@ def test_search_transactions():
 
     r3 = r.search_transactions("amazon")
     rows2 = r3.shape[0]
-    for i in r2["Description"]:
-        assert i == "Amazon"
+    for j in r3["Description"]:
+        if "amazon" in j.lower():
+            assert True
+        else:
+            assert False
     assert rows2 == 231
 
 @pytest.fixture   
