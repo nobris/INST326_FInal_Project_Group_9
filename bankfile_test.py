@@ -6,11 +6,22 @@ import pandas as pd
 
 def test_search_transactions():
     """Does Bookkeeper.search_transactions return results from the dataframe
-    based on 
+    based on?
     """
     r = bankfile.Bookkeeper("transactions.csv")
-    r2 = r.search_transactions("spotif")
-    
+
+    r2 = r.search_transactions("spotify")
+    rows = r2.shape[0]
+    for i in r2["Description"]:
+        assert i == "Spotify"
+    assert rows == 12
+
+    r3 = r.search_transactions("amazon")
+    rows2 = r3.shape[0]
+    for i in r2["Description"]:
+        assert i == "Amazon"
+    assert rows2 == 231
+
 def test_suspicious_transactions():
     """ This test checks whether the suspicious transactions test is searching
     all of the user's available accounts.
@@ -50,5 +61,14 @@ def test_category_counts(test_spending_category_frequency):
     assert test_spending_category_frequency.loc['Transfer', 'count'] == df['Category'].value_counts().Transfer
     assert test_spending_category_frequency.loc['Groceries', 'count'] == df['Category'].value_counts().Groceries
     assert test_spending_category_frequency.loc['Restaurants', 'count'] == df['Category'].value_counts().Restaurants
-    assert test_spending_category_frequency.loc['Credit Card Payment', 'count'] ==df.loc[df.Category == "Credit Card Payment", 'Category'].count()
+    assert test_spending_category_frequency.loc['Credit Card Payment', 'count'] == df.loc[df.Category == "Credit Card Payment", 'Category'].count()
     
+def test_day_of_week_summary():
+    """Does Bookkeeper.day_of_week_summary return results from the dataframe
+    based on 
+    """    
+    r = bankfile.Bookkeeper("transactions.csv")
+    r2 = r.day_of_week_summary()   
+    
+if __name__ == "__main__":
+    test_search_transactions()
