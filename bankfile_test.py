@@ -62,13 +62,6 @@ def test_category_counts(test_spending_category_frequency):
     assert test_spending_category_frequency.loc['Groceries', 'count'] == df['Category'].value_counts().Groceries
     assert test_spending_category_frequency.loc['Restaurants', 'count'] == df['Category'].value_counts().Restaurants
     assert test_spending_category_frequency.loc['Credit Card Payment', 'count'] == df.loc[df.Category == "Credit Card Payment", 'Category'].count()
-    
-def test_day_of_week_summary():
-    """Does Bookkeeper.day_of_week_summary return results from the dataframe
-    based on 
-    """    
-    r = bankfile.Bookkeeper("transactions.csv")
-    r2 = r.day_of_week_summary()   
-    
+       
 if __name__ == "__main__":
     test_search_transactions()
