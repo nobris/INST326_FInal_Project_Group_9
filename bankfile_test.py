@@ -43,7 +43,7 @@ def test_spending_category_frequency():
     return r.spending_category_frequency()
     
 def test_category_counts(test_spending_category_frequency):
-    """Does spending_category_frequency return the correct category counts?
+    """Does spending_category_frequency return the correct value for each category count/frequency?
     """
     df = pd.read_csv("transactions.csv")
     assert test_spending_category_frequency.loc['Shopping', 'count'] == df['Category'].value_counts().Shopping
