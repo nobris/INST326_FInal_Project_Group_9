@@ -449,11 +449,8 @@ class Bookkeeper:
             end_date = self.latest
         date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
         df = self.transactions[date_filter]
-                   
-        dow_list = []
-        for i in df["Date"]:
-            dow_list.append(i.strftime("%A"))
-        df["Day of Week"] = pd.Series(dow_list)
+
+        df["Day of Week"] = df["Date"].dt.strftime("%A")
         
         avg_transactions = []
         means = []
