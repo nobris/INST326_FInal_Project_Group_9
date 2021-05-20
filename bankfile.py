@@ -85,8 +85,8 @@ class Bookkeeper:
         # Message to user that this method is running
         print("\n First, let's run a scan to identify suspicious charges... just a moment...\n")
         
-        # Wait 2 seconds before next code block
-        time.sleep(2)
+        # Wait 1.5 seconds before next code block
+        time.sleep(1.5)
         
         # if start date and end date aren't specified, scan all the data
         if start_date == 0:
@@ -179,7 +179,7 @@ class Bookkeeper:
                 time.sleep(1)
         
         print("****SUSPICOUS TRANSACTIONS SCAN FINISHED****")
-        time.sleep(2)
+        time.sleep(1)
         
     def financial_advice(self, start_date = None, end_date = None): # Walesia
         """ For the user specified date range (if applied) this method will 
@@ -215,8 +215,8 @@ class Bookkeeper:
         print(f"Next we'll examine your income vs spending from {start_date} to {end_date}...")
         print(" ")        
         
-        # Wait 2 seconds before next code block
-        time.sleep(2)
+        # Wait 1 second before next code block
+        time.sleep(1)
         
         # create date filter
         date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
@@ -271,7 +271,7 @@ class Bookkeeper:
             time.sleep(1)
             
         print("****INCOME VS EXPENSES SCAN FINISHED****")
-        time.sleep(2)
+        time.sleep(1)
             
     def spending_category_frequency(self, start_date=0, end_date=0): # Tyler
         """ This method creates a frequency table to display the frequency/count of each
@@ -291,7 +291,7 @@ class Bookkeeper:
         
         print("\n")
         print("Now, we will provide a frequency table of spending categories you use the most...")
-        time.sleep(2)
+        time.sleep(1)
         
         if start_date == 0:
             start_date = self.earliest
@@ -306,10 +306,10 @@ class Bookkeeper:
         category_frequency = pd.crosstab(index = df['Category'], columns = 'count').sort_values(['count'], ascending = False).head(5)
         print(category_frequency)
         print("\n")
-        time.sleep(2)
+        time.sleep(1)
         
         print("****END SPENDING CATEGORY FREQUENCY**** \n")
-        time.sleep(2)
+        time.sleep(1)
 
     def mint_plot(self,start_date=0,end_date=0): # Tyler
         """Creates a bar plot using MatLab that displays total spending in each 
@@ -330,7 +330,7 @@ class Bookkeeper:
         print("Here is a bar plot showing the months you have spent the most money,\n")
         print("ordered from the smallest amount to largest amount.")
         print("\n")
-        time.sleep(2)
+        time.sleep(1)
         
         df = self.transactions
         
@@ -380,7 +380,7 @@ class Bookkeeper:
         print(f"Here are your top 5 spending categories from {start_date} to {end_date}\n"
               f"and the amounts you spent for each of them: \n")
         
-        time.sleep(2)
+        time.sleep(1)
         
         date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
         
@@ -390,7 +390,7 @@ class Bookkeeper:
     
         time.sleep(1)
         print("\n****TOP CATEGORIES FINISHED**** \n")
-        time.sleep(2)
+        time.sleep(1)
     
     def search_transactions(self, desc, start_date = 0, end_date = 0): # Tristan
         """Displays transactions where the description matches what the user
@@ -539,7 +539,7 @@ class Bookkeeper:
                        f"at ${itl['Amount'][j]:.2f}.")
                if i == 5 or i == itl.index.size - 1:
                    break  
-               time.sleep(1)
+               time.sleep(.25)
        return " "            
        
        
@@ -585,8 +585,7 @@ if __name__ == "__main__":
     """
     args = parse_args(sys.argv[1:])
     
-    print("\n **Welcome to Team 9's 'Smart Money' Analyzer for your Mint data!**\n")
-    
+    print("**Welcome to Team 9's 'Smart Money' Analyzer for your Mint data!**")
     #Instantiate the class
     
     Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account)
