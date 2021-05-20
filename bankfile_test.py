@@ -76,10 +76,10 @@ def test_day_of_week_summary():
     r = bankfile.Bookkeeper("transactions.csv")
     return r.day_of_week_summary()
 
-def test_dows_values(test_day_of_week_summary):
+def test_does_values(test_day_of_week_summary):
     """Does day_of_week_summary return the correct values for each summary category?
     """
-    df = pd.read_csv("transactions.csv")
+    df = bankfile.Bookkeeper("transactions.csv")
     df["Day of Week"] = df["Date"].dt.strftime("%A")
     
     assert test_day_of_week_summary.loc['Monday', 'Avg Transactions'] == round(df[df["Day of Week"]=='Monday'].groupby("Date")["Date"].count().mean(),2)
@@ -100,7 +100,7 @@ def test_spending_category_frequency():
 def test_category_counts(test_spending_category_frequency):
     """Does spending_category_frequency return the correct value for each category count/frequency?
     """
-    df = pd.read_csv("transactions.csv")
+    df = bankfile.Bookkeeper("transactions.csv")
     assert test_spending_category_frequency.loc['Shopping', 'count'] == df['Category'].value_counts().Shopping
     assert test_spending_category_frequency.loc['Transfer', 'count'] == df['Category'].value_counts().Transfer
     assert test_spending_category_frequency.loc['Groceries', 'count'] == df['Category'].value_counts().Groceries
