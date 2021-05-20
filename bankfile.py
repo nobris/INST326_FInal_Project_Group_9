@@ -78,6 +78,8 @@ class Bookkeeper:
             Prints a congratulatory message if the scan did not find any potentially 
             suspicious charges. If suspicious charges were found, prints a message
             indicating so, and a list of any suspicious charges for the accounts.
+            The method also prints a statement letting the user know the method has
+            finished.
             
         """
         # Message to user that this method is running
@@ -176,6 +178,9 @@ class Bookkeeper:
                 print(suspicious_charges.drop_duplicates(subset="Description", keep=False, inplace=False))
                 time.sleep(1)
         
+        print("****SUSPICOUS TRANSACTIONS SCAN FINISHED****")
+        time.sleep(2)
+        
     def financial_advice(self, start_date = None, end_date = None): # Walesia
         """ For the user specified date range (if applied) this method will 
             calculate income vs spending and offer financial advice.
@@ -196,6 +201,7 @@ class Bookkeeper:
         
         Side Effects: 
             Prints some general advice statements about user spending. 
+            Also prints a statement letting the user know the method has finished.
         """
         # if start date and end date aren't specified, scan all the data
         if start_date == 0:
@@ -262,6 +268,10 @@ class Bookkeeper:
             
             print(advice)
             print(" ")
+            time.sleep(1)
+            
+        print("****INCOME VS EXPENSES SCAN FINISHED****")
+        time.sleep(2)
             
     def spending_category_frequency(self, start_date=0, end_date=0): # Tyler
         """ This method creates a frequency table to display the frequency/count of each
@@ -272,13 +282,17 @@ class Bookkeeper:
             built off of
             start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
             end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.
+            
         Side effects:
-           Writes to stdout. 
-        Returns:
-            category_frequency_table(df): dataframe that displays frequency/count of each
-            spending category 
+           Prints a category_frequency_table (df): dataframe that displays frequency/count of each
+           spending category. 
+           Also prints a statement letting the user know when the method has finished.
         """
-        print("\n Now, we will provide a frequency table of spending categories you use the most.")
+        
+        print("\n")
+        print("Now, we will provide a frequency table of spending categories you use the most...")
+        time.sleep(2)
+        
         if start_date == 0:
             start_date = self.earliest
 
@@ -290,7 +304,12 @@ class Bookkeeper:
         df = self.transactions[date_filter]
 
         category_frequency = pd.crosstab(index = df['Category'], columns = 'count').sort_values(['count'], ascending = False).head(5)
-        return category_frequency
+        print(category_frequency)
+        print("\n")
+        time.sleep(2)
+        
+        print("****END SPENDING CATEGORY FREQUENCY**** \n")
+        time.sleep(2)
 
     def mint_plot(self,start_date=0,end_date=0): # Tyler
         """Creates a bar plot using MatLab that displays total spending in each 
@@ -301,27 +320,40 @@ class Bookkeeper:
             built off of
             start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
             end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.
-        Side effects:
-           Writes to stdout. 
+            
+        Side Effects:
+           Writes to stdout, also prints a statement informing the user that the method has concluded 
+           
         Returns:
-            month_plot: bar plot that displays
-            total spending in each month
+            month_plot: bar plot that displays the total spending in each month
         """
-        print("\n Here is a bar plot showing the months you have spent the most money,ranging from the smallest amount to largest amount.")
+        print("Here is a bar plot showing the months you have spent the most money,\n")
+        print("ordered from the smallest amount to largest amount.")
+        print("\n")
+        time.sleep(2)
+        
         df = self.transactions
+        
         if start_date == 0:
             start_date = self.earliest
             
         if end_date == 0:
             end_date = self.latest
+            
         date_filter = (df["Date"] <= end_date) & (df["Date"] >= start_date)
         df = self.transactions[date_filter]
         month_plot = df.groupby(df['Date'].dt.strftime('%B %Y'))['Amount'].sum().sort_values()
         month_plot.plot.bar(x = 'Date', y = 'Amount')
+        
         plt.title("Amount Spent Per Month")
         plt.ylabel("Amount Spent in $")
         plt.show()
-        return month_plot.plot.bar
+        
+        month_plot.plot.bar
+        
+        print("****TOTAL SPENDING PLOT FINISHED**** \n")
+        time.sleep(1)
+    
     def top_categories(self, amt = 5, start_date = 0, end_date = 0): # Tristan
         """Returns the top 5 categories the user spends their money on and the
         amount related to the category.
@@ -330,24 +362,36 @@ class Bookkeeper:
             would like to view.
             start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
             end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.
+            
         Side Effects:
-            Prints a statement showing the user the data they are looking at in
-            the terminal.
-        Returns:
-            dataframe: A datafrane of the top 5 categories the user spends their money on
-            from most amount of money spent to least amount spent.
+            Prints df_cat (df) of the top 5 categories the user spends their money on 
+            from most amount of money spent to least amount of money spent. 
+            
+            Also prints a statement showing the user the data they are looking at in
+            the terminal, and lets the user know when the method has concluded.
         """
-        print("\nHere are your top 5 spending categories and the amounts you spend for each of them:\n")
+        
         if start_date == 0:
             start_date = self.earliest
             
         if end_date == 0:
             end_date = self.latest
+            
+        print(f"Here are your top 5 spending categories from {start_date} to {end_date}\n"
+              f"and the amounts you spent for each of them: \n")
+        
+        time.sleep(2)
+        
         date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
         
         df = self.transactions[date_filter]
         df_cat = df[['Category', 'Amount']].groupby('Category', as_index = False).sum().sort_values('Amount', ascending=False).head(amt)
-        return df_cat
+        print(df_cat)
+    
+        time.sleep(1)
+        print("\n****TOP CATEGORIES FINISHED**** \n")
+        time.sleep(2)
+    
     def search_transactions(self, desc, start_date = 0, end_date = 0): # Tristan
         """Displays transactions where the description matches what the user
         inputs in the argument -d.
@@ -369,26 +413,33 @@ class Bookkeeper:
             
         if end_date == 0:
             end_date = self.latest
+            
         date_filter = (self.transactions["Date"] <= end_date) & (self.transactions["Date"] >= start_date)
         df = self.transactions[date_filter]
+        
         lower_df = df["Description"].str.lower()
+        
         search = df[lower_df.str.contains(desc.lower())]
+        
         if search.empty:
-            return("\nYour search resulted in zero matches!")
+            return("\n Your search resulted in zero matches!")
+        
         else:
             print("\n Here are transactions where descriptions matched what you searched for:\n")
             return search
+        
     def day_of_week_summary(self, start_date = 0, end_date = 0): # Sophia       
         """Creates dataframe with summary values for the days of the week.
         
        Args:
             start_date (str): optional start date in MM-DD-YYYY. Defaults to 0.
             end_date (str): optional end date in MM-DD-YYYY. Defaults to 0.   
+            
         Side effects:
-            Writes to stdout.    
-       Returns:
-           summary_df(df): dataframe containing mean, median, minimum, maximum 
-           amount and average amount of transactions used for the days of the week.
+            Prints to stdout:
+           - summary_df(df): dataframe containing mean, median, minimum, maximum 
+           - amount and average amount of transactions used for the days of the week.
+           - statement telling the user that the function is finished.
         """
         df = self.transactions       
         if start_date == 0:
@@ -424,8 +475,12 @@ class Bookkeeper:
         s6 = pd.Series(maxs, index = days_list, name = "Maximum")
 
         summary_df = pd.concat([s2,s3,s4,s5,s6], axis = 1)
-        print("\nHere is your summary information for the days of the week:")
-        return summary_df
+        print("\nHere is your summary information for the days of the week: \n")
+        time.sleep(1)
+        print(summary_df)
+        print("\n")
+    
+        print("****DAY OF THE WEEK SUMMARY FINISHED****")
     
     def compare_spendings(self, start_date = 0, end_date = 0): # Sophia
        """Compares spendings between most recent weeks, months, and years
@@ -464,7 +519,7 @@ class Bookkeeper:
        
        for itl in [wk, mth, yr]:
            i = 0
-           print(f"\nHere are how your {itl.index.name.lower()}ly spendings compare:")
+           print(f"\nHere are how your {itl.index.name.lower()}ly spendings compare: \n")
            for j in reversed(itl.index):
                i += 1
                if itl['Change'][j] > 0:
@@ -486,6 +541,7 @@ class Bookkeeper:
                        f"at ${itl['Amount'][j]:.2f}.")
                if i == 5 or i == itl.index.size - 1:
                    break  
+               time.sleep(1)
        return " "            
        
        
@@ -531,15 +587,17 @@ if __name__ == "__main__":
     """
     args = parse_args(sys.argv[1:])
     
-    print("\n **Thank you for using Team 9's 'Smart Money' Analyzer for your Mint data!**")
+    print("\n **Welcome to Team 9's 'Smart Money' Analyzer for your Mint data!**\n")
     
-    # Instantiate the class
+    #Instantiate the class
     
     Bookkeeper(args.mint_csv).suspicious_charges(args.start_date, args.end_date, args.account)
+    Bookkeeper(args.mint_csv).financial_advice(args.start_date, args.end_date)
+
     Bookkeeper(args.mint_csv).spending_category_frequency(args.start_date, args.end_date)
     
     Bookkeeper(args.mint_csv).mint_plot(args.start_date, args.end_date)
-    Bookkeeper(args.mint_csv).top_categories(args.amt, args.start_date, args.end_date).to_string(index = False)
+    Bookkeeper(args.mint_csv).top_categories(args.amt, args.start_date, args.end_date)
     
     if args.desc != None:
         try:
@@ -549,3 +607,7 @@ if __name__ == "__main__":
     
     Bookkeeper(args.mint_csv).day_of_week_summary(args.start_date, args.end_date)
     Bookkeeper(args.mint_csv).compare_spendings(args.start_date, args.end_date)
+
+    print("\n *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*")
+    print("---Thank you for using our program!! We hope you found this data analysis useful!*---")
+    print("*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*")
