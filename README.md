@@ -1,33 +1,57 @@
-# INST326_Final_Project_Group_9
+# Final Project - Team 9 - INST326 Spring 2021
 
-Bookkeeper for Mint Transactions
+## Background
+Our program returns various financial summaries from transactions listed in a .csv file.
 
-## Our project consists of three main files:
+Included methods identify suspicious tranactions, give financial advice, summarize and plot spending over time,
+and support user search. 
 
-bankfile.py (the main file that is called in terminal to run the program)
+## About our program
+### Provided files
 
-banfile_test.py (the test file that uses pytest to verify our methods work)
+**bankfile.py**: the main file that is called in terminal to run the program.
 
-transactions.csv (the csv file our program parses to organize and display information to the user)
+**bankfile_test.py**: the test file that uses pytest to verify our methods work.
 
-## To run our program from the command line it is called with multiple arguments:
+**transactions.csv**: the .csv file of user financial data that our program parses.
 
-python3 bankfile.py "transactions.csv" [optional arguments]
+### To run our program from the command line it is called with multiple arguments:
 
-## Our program has 6 arguments, only one of which is required:
+```
+python3 bankfile.py transactions.csv [optional arguments]
+```
 
-"mint.csv" : the required argument of the filepath name for the csv to be read
+if that does not work, try:
 
--s : "str specifying the start date range; MM-DD-YYYY format"
+```
+python3 bankfile.py transactions.csv [optional arguments]
+```
 
--e : "str specifying the end date range; MM-DD-YYYY format"
+### Our program has 6 arguments, only one of which is required:
 
--a : "str specifying the financial account"
+"transactions.csv" : required argument - filepath name for the csv to be read
 
--c : "int amount for top categories"
+*the following are optional arguments*:
 
--d : "str specifying description search"
+**-s**: (str) specifying the start date range; MM-DD-YYYY format
 
-## How to use and interpret the program:
+**-e**: (str) specifying the end date range; MM-DD-YYYY format
 
-A user would want to use our program to examine their mint transactions. They would download their transactions csv and run our program through the terminal with whatever arguments they choose. When run, the user would interpret the output of our program based on the texts in their terminal.
+**-a**: (str( specifying the financial account
+
+**-c**: (int) amount to return for top categories
+
+**-d**: (str) specifying description search
+
+## Authors
+Sophia Chen
+[@chensophiah](https://github.com/chensophiah)
+
+Tristan Clark
+[@nobris](https://github.com/nobris)
+
+Tyler Deaner
+[@TylerD01](https://github.com/TylerD01)
+
+Walesia Robinson II
+[@lisalynn7](http://github.com/lisalynn7)
